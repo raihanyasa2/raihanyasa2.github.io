@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>News Page - Transition Simulation</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 180vh; /* Initial body height to allow scrolling */
+        font-family: "Google Sans", "Roboto", Arial, sans-serif; /* Google Fonts */
+        background: #f8f8f8; /* Lighter background */
+        overflow-y: auto; /* Allow scrolling by default */
+        transition: overflow-y 0s 0.5s; /* Smooth transition */
+      }
+
+      body.no-scroll {
+        overflow-y: hidden; /* Disable scrolling */
+      }
+
+      .fake-address-bar-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50px; /* Address bar height */
+        background-color: white;
+        z-index: 0; /* Initially low so content can overlap */
+        pointer-events: none; /* Clicks pass through */
+        overflow: hidden;
+      }
+
+      .fake-address-bar-container.active {
+        z-index: 9999; /* High z-index when active to appear above content */
+      }
+
+      .fake-address-bar-container img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: fill;
+        object-position: top center;
+        opacity: 1; /* Initially 1 for 1.jpg */
+      }
+
+      #addressImage2 {
+        opacity: 0; /* Hide second image by default */
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      /* Wrapper for the main scrollable content area */
+      .content-area-wrapper {
+        position: relative;
+        padding-top: 0;
+        width: 100%;
+        box-sizing: border-box;
+        padding-bottom: 50px;
+      }
+
+      /* Initial scrollable content */
+      .content {
+        position: relative; /* Initially relative position */
+        z-index: 1; /* Above fixed address bar initially */
+        max-width: 800px; /* Max width for news content */
+        margin: 0 auto;
+        padding: 20px;
+        box-sizing: border-box;
+        transition: opacity 0.2s ease; /* Fade transition for content */
+        background-color: #ffffff; /* News content background */
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .content.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* --- Specific News Content Styling --- */
+      .news-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+        flex-wrap: wrap;
+      }
+
+      .news-logo {
+        font-size: 28px;
+        font-weight: 700;
+        color: #d32f2f; /* Typical news red color */
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      .news-nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .news-nav a {
+        text-decoration: none;
+        color: #555;
+        font-weight: 500;
+        font-size: 15px;
+      }
+
+      .news-nav a:hover {
+        color: #d32f2f;
+      }
+
+      .news-date {
+        font-size: 14px;
+        color: #777;
+        text-align: right;
+        margin-top: -10px;
+        margin-bottom: 20px;
+        text-align: center;
+        width: 100%;
+      }
+
+      .main-article h1 {
+        font-size: 36px;
+        color: #202124;
+        margin-bottom: 15px;
+        line-height: 1.2;
+        font-weight: 700;
+        font-size: 28px;
+      }
+
+      .main-article .author-date {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+      }
+
+      .main-article img {
+        width: 100%;
+        height: auto;
+        border-radius: 6px;
+        margin-bottom: 25px;
+      }
+
+      .main-article p {
+        line-height: 1.8;
+        margin-bottom: 20px;
+        color: #333;
+        font-size: 17px;
+        text-align: justify;
+        font-size: 15px;
+      }
+
+      .related-articles {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 1px solid #eee;
+      }
+
+      .related-articles h2 {
+        font-size: 22px;
+        color: #202124;
+        margin-bottom: 20px;
+        font-weight: 500;
+      }
+
+      .related-articles ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .related-articles li {
+        margin-bottom: 15px;
+      }
+
+      .related-articles a {
+        text-decoration: none;
+        color: #1a73e8;
+        font-size: 16px;
+        font-weight: 500;
+      }
+
+      .related-articles a:hover {
+        text-decoration: underline;
+      }
+
+      /* Loading Overlay & Login Section will be FIXED after transition */
+      .loading-overlay,
+      .login-section {
+        opacity: 0;
+        position: fixed; /* IMPORTANT: Change to fixed */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh; /* Fill entire viewport */
+        padding-top: 56px; /* Space for address bar */
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f8f8; /* Background to cover content below */
+        z-index: 2; /* Above fading content, below active address bar */
+        pointer-events: none; /* Not clickable initially */
+        transition: opacity 0.5s ease; /* For fade in/out transition */
+      }
+
+      .loading-overlay {
+        text-align: center;
+        font-size: 24px;
+        color: #555;
+        flex-direction: column; /* To vertically center "Loading..." */
+      }
+
+      .loading-overlay.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .login-section {
+        z-index: 3; /* Topmost when it appears */
+      }
+
+      .login-section.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* --- Styling for Login Form (Google Style) --- */
+      .login-form {
+        background-color: white; /* White background */
+        padding: 48px; /* More padding */
+        border-radius: 8px; /* Softer corners */
+        box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.302),
+          0 4px 8px 3px rgba(60, 64, 67, 0.149); /* Google-like shadow */
+        width: 100%;
+        max-width: 450px; /* More flexible form width */
+        text-align: center;
+        border: 1px solid #dadce0; /* Thin border */
+        box-sizing: border-box; /* MODIFIKASI: Penting untuk padding dan width */
+      }
+
+      .login-form .logo {
+        margin-bottom: 24px; /* Space between logo and title */
+      }
+
+      .login-form .logo img {
+        width: 80px; /* Logo size */
+        height: auto;
+      }
+
+      .login-form h2 {
+        margin-bottom: 8px; /* Space from title to description */
+        color: #202124; /* Darker text color */
+        font-size: 24px;
+        font-weight: normal; /* Normal font weight */
+      }
+
+      .login-form p.subtitle {
+        color: #202124;
+        font-size: 16px;
+        margin-bottom: 24px; /* Space from subtitle to first input */
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      .input-group label {
+        display: none; /* Label hidden to focus on placeholder */
+      }
+
+      .input-group input[type="text"],
+      .input-group input[type="password"] {
+        width: 100%; /* Full width */
+        padding: 15px 14px; /* Adjusted padding */
+        border: 1px solid #dadce0; /* Default border */
+        border-radius: 4px; /* Slightly rounded corners */
+        font-size: 16px;
+        color: #202124;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .input-group input[type="text"]:focus,
+      .input-group input[type="password"]:focus {
+        outline: none;
+        border-color: #1a73e8; /* Blue border on focus */
+        box-shadow: 0 0 0 1px #1a73e8; /* Thin blue shadow on focus */
+      }
+
+      .login-form button {
+        width: auto; /* Width according to content */
+        min-width: 96px; /* Minimum width */
+        padding: 10px 24px; /* Button padding */
+        background-color: #1a73e8; /* Google blue color */
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px; /* Button font size */
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .login-form button:hover {
+        background-color: #176ad2;
+        box-shadow: 0 1px 3px 1px rgba(66, 133, 244, 0.3),
+          0 1px 2px 0 rgba(66, 133, 244, 0.15);
+      }
+
+      .login-form .actions {
+        display: flex;
+        justify-content: space-between; /* To place button on right and link on left */
+        align-items: center;
+        margin-top: 32px; /* Space from last input */
+      }
+
+      .login-form .link-create-account,
+      .login-form .link-forgot-password {
+        color: #1a73e8;
+        font-size: 14px;
+        text-decoration: none;
+        font-weight: 500; /* Slightly bolder */
+      }
+
+      .login-form .link-create-account:hover,
+      .login-form .link-forgot-password:hover {
+        text-decoration: underline;
+      }
+
+      /* MEDIA QUERIES for better responsiveness */
+      @media (max-width: 768px) {
+        .content {
+          padding: 15px; /* Kurangi padding di layar kecil */
+        }
+
+        .news-header {
+          flex-direction: column; /* Tata letak vertikal untuk header */
+          text-align: center;
+        }
+
+        .news-logo {
+          margin-bottom: 15px; /* Spasi setelah logo */
+        }
+
+        .news-nav ul {
+          flex-direction: column; /* Navigasi vertikal */
+          align-items: center; /* Pusatkan item navigasi */
+          gap: 10px; /* Kurangi gap */
+        }
+
+        .news-date {
+          text-align: center; /* Pusatkan tanggal */
+        }
+
+        .main-article h1 {
+          font-size: 24px; /* Kecilkan ukuran judul artikel utama */
+          line-height: 1.3;
+        }
+
+        .main-article p {
+          font-size: 15px; /* Kecilkan ukuran font paragraf */
+        }
+
+        .login-form {
+          margin: 0 20px; /* Tambahkan margin horizontal agar tidak terlalu mepet ke tepi */
+          padding: 30px 20px; /* Sesuaikan padding form login */
+        }
+      }
+
+      @media (max-width: 480px) {
+        .content {
+          padding: 10px; /* Padding lebih kecil lagi */
+        }
+
+        .news-logo {
+          font-size: 24px; /* Ukuran logo lebih kecil */
+        }
+
+        .news-nav a {
+          font-size: 14px; /* Ukuran font navigasi lebih kecil */
+        }
+
+        .main-article h1 {
+          font-size: 20px; /* Ukuran judul artikel utama lebih kecil */
+        }
+
+        .main-article p {
+          font-size: 14px; /* Ukuran font paragraf lebih kecil */
+        }
+
+        .related-articles h2 {
+          font-size: 20px; /* Ukuran judul artikel terkait lebih kecil */
+        }
+
+        .login-form {
+          padding: 25px 15px; /* Padding form login lebih kecil lagi */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fake-address-bar-container" id="fakeAddressBar">
+      <img src="1.jpg" alt="Fake Address Bar 1" id="addressImage1" />
+      <img
+        src="adress-bar-opera.png"
+        alt="Fake Address Bar 2"
+        id="addressImage2"
+      />
+    </div>
+
+    <div class="content-area-wrapper" id="contentAreaWrapper">
+      <div class="content" id="mainContent">
+        <div class="news-header">
+          <div class="news-logo">World News Daily</div>
+          <nav class="news-nav">
+            <ul>
+              <li><a href="#">National</a></li>
+              <li><a href="#">International</a></li>
+              <li><a href="#">Technology</a></li>
+              <li><a href="#">Sports</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="news-date">Thursday, June 5, 2025 | 10:11 AM WIB</div>
+
+        <div class="main-article">
+          <h1>
+            Artificial Intelligence Reshaping Industries: A Global Perspective
+          </h1>
+          <p class="author-date">
+            By: Editorial Staff | Published: June 5, 2025
+          </p>
+          <img
+            src="https://beconnected.esafety.gov.au/pluginfile.php/99437/mod_resource/content/2/what-is-ai%20%281%29.jpg"
+            alt="AI main article image"
+          />
+          <p>
+            **JAKARTA** – Artificial Intelligence (AI) continues to be a primary
+            driver of industrial revolution worldwide. From manufacturing to
+            healthcare, AI not only enhances operational efficiency but also
+            unlocks previously unimaginable new business opportunities. Experts
+            predict that AI adoption will become even more massive within the
+            next five years, fundamentally transforming the landscape of work
+            and the economy.
+          </p>
+          <p>
+            At a recently concluded global technology conference, leading tech
+            companies showcased their latest innovations in AI. Demonstrations
+            highlighted AI's capabilities in complex data analysis, process
+            automation, and customer experience personalization. Panel
+            discussions emphasized the importance of ethical development in AI
+            and the need for adaptive regulations to ensure this technology is
+            used for the common good.
+          </p>
+          <p>
+            While AI's potential is immense, the challenges are equally
+            significant. Concerns about job displacement and data privacy issues
+            were hot topics, requiring comprehensive solutions from governments,
+            industries, and academia. However, the spirit of collaboration to
+            overcome these challenges appeared strong, signaling a shared
+            commitment to embracing the AI-driven digital era.
+          </p>
+          <p>
+            The Indonesian government itself has demonstrated a commitment to
+            integrating AI across various sectors, including education and
+            public services, to enhance the nation's competitiveness on the
+            international stage. Strategic steps are being formulated to prepare
+            a skilled workforce in the field of AI.
+          </p>
+        </div>
+
+        <div class="related-articles">
+          <h2>Related News</h2>
+          <ul>
+            <li>
+              <a href="#">Trade War Impact on Global Economy in This Quarter</a>
+            </li>
+            <li>
+              <a href="#"
+                >Latest Electric Car Innovations from European Manufacturers</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                >Crypto Market Analysis: Volatility and Investment
+                Opportunities</a
+              >
+            </li>
+          </ul>
+        </div>
+        <p style="text-align: center; margin-top: 40px; color: #777">
+          Scroll down further to see the page transition simulation.
+        </p>
+      </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">Loading...</div>
+
+    <div class="login-section" id="loginFormSection">
+      <form class="login-form">
+        <div class="logo">
+          <img
+            src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+            alt="Google Logo"
+          />
+        </div>
+        <h2>Sign in</h2>
+        <p class="subtitle">Use your Google Account</p>
+        <div class="input-group">
+          <label for="username">Email or phone</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Email or phone"
+            required
+          />
+        </div>
+        <a href="#" class="link-forgot-password">Forgot email?</a>
+        <div class="actions">
+          <a href="#" class="link-create-account">Create account</a>
+          <button type="submit">Next</button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      window.addEventListener("load", () => {
+        const fakeBar = document.getElementById("fakeAddressBar");
+        const addressImage1 = document.getElementById("addressImage1");
+        const addressImage2 = document.getElementById("addressImage2");
+        const mainContent = document.getElementById("mainContent");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const loginFormSection = document.getElementById("loginFormSection");
+        const contentAreaWrapper =
+          document.getElementById("contentAreaWrapper");
+        const body = document.body;
+
+        // Function to scroll the page down slightly to hide the real address bar
+        const scrollPageDownInitial = () => {
+          window.scrollTo({
+            top: 1,
+            behavior: "smooth",
+          });
+        };
+
+        // Initial scroll on load
+        scrollPageDownInitial();
+
+        // Initial delay of 4 seconds before all transitions begin
+        setTimeout(() => {
+          // IMPORTANT: Reset scroll position to top when transition starts
+          window.scrollTo(0, 0);
+
+          // Disable scrolling on the body instantly when transition begins
+          body.classList.add("no-scroll");
+
+          // Raise z-index of fake address bar to appear above fading content
+          fakeBar.classList.add("active");
+
+          // Main content begins to fade out
+          mainContent.classList.add("hidden");
+
+          // After content fades out (0.5 seconds), show loading overlay (fixed)
+          setTimeout(() => {
+            // Instantly switch address bar images here, simultaneously with loading overlay appearing
+            addressImage1.style.opacity = "0"; // 1.jpg disappears
+            addressImage2.style.opacity = "1"; // adress-bar-opera.png appears
+
+            loadingOverlay.classList.add("visible"); // Loading overlay fades in over 0.5s
+
+            // After loading overlay finishes fading in and is fully visible (1.5 seconds),
+            // instantly display the login page (fixed)
+            setTimeout(() => {
+              // Instantly hide loading overlay
+              loadingOverlay.classList.remove("visible");
+              loadingOverlay.style.opacity = "0"; // Ensure it's hidden
+              loadingOverlay.style.pointerEvents = "none"; // Disable interaction
+
+              // Completely hide contentAreaWrapper so it doesn't interfere with z-index
+              // Kunci perubahan ada di sini: ini memastikan bahwa content-area-wrapper tidak lagi mempengaruhi tinggi scroll
+              contentAreaWrapper.style.display = "none";
+
+              // Instantly display login page
+              loginFormSection.classList.add("visible");
+
+              // Pastikan body tetap tidak bisa discroll setelah login form muncul
+              body.classList.add("no-scroll"); // Ini sudah ada, tapi penting untuk ditekankan ulang
+            }, 1500); // Duration for loading to be fully visible (1.5 seconds)
+          }, 21); // Delay for initial content to finish fading out (0.5 seconds)
+        }, 4000); // Initial delay of 4 seconds
+      });
+    </script>
+  </body>
+</html>
