@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Phantom PoC</title>
+</head>
+<body>
+<h2>Phantom Wallet PoC</h2>
+
+<button onclick="normalConnect()">1. Normal Connect</button>
+<button onclick="silentConnect()">2. Silent Connect (onlyIfTrusted)</button>
+<button onclick="signMessage()">3. Sign Message</button>
+<button onclick="signTransaction()">4. Sign Dummy Transaction</button>
+
+<pre id="log"></pre>
+
+<script>
+const log = (msg) => {
+  document.getElementById("log").textContent += msg + "\n";
+  console.log(msg);
+};
+
+function getProvider() {
+  if ("solana" in window) {
+    const provider = window.solana;
+    if (provider.isPhantom) {
+      return provider;
+    }
+  }
+  return null;
+}
+
+async function normalConnect() {
+  const provider = getProvider();
+  if (!provider) {
+    log("Phantom not found");
+    return;
+  }
+
+  try {
+    const res = await provider.connect();
+    log("Connected: " + res.publicKey.toString());
+  } catch (e) {
+    log("Connect error: " + e.message);
+  }
+}
+
+async function silentConnect() {
+  const provider = getProvider();
+  if (!provider) {
+    log("Phantom not found");
+    return;
+  }
+
+  try {
+    const res = await provider.connect({ onlyIfTrusted: true });
+    log("Silent connect SUCCESS: " + res.publicKey.toString());
+  } catch (e) {
+    log("Silent connect failed: " + e.message);
+  }
+}
+
+async function signMessage() {
+  const provider = getProvider();
+  if (!provider) {
+    log("Phantom not found");
+    return;
+  }
+
+  try {
+    const msg = new TextEncoder().encode("Phantom PoC test message");
+    const signed = await provider.signMessage(msg, "utf8");
+
+    log("Message signed");
+    log("Signature: " + signed.signature);
+  } catch (e) {
+    log("Sign message error: " + e.message);
+  }
+}
+
+async function signTransaction() {
+  const provider = getProvider();
+  if (!provider) {
+    log("Phantom not found");
+    return;
+  }
+
+  try {
+    const connection = new solanaWeb3.Connection(
+      solanaWeb3.clusterApiUrl("devnet")
+    );
+
+    const fromPubkey = provider.publicKey;
+    const toPubkey = fromPubkey;
+
+    const tx = new solanaWeb3.Transaction().add(
+      solanaWeb3.SystemProgram.transfer({
+        fromPubkey,
+        toPubkey,
+        lamports: 1
+      })
+    );
+
+    tx.feePayer = fromPubkey;
+    tx.recentBlockhash = (
+      await connection.getLatestBlockhash()
+    ).blockhash;
+
+    const signedTx = await provider.signTransaction(tx);
+
+    log("Transaction signed");
+    console.log(signedTx);
+  } catch (e) {
+    log("Sign transaction error: " + e.message);
+  }
+}
+</script>
+
+<!-- Solana web3.js -->
+<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+
+</body>
+</html>
