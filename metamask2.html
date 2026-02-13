@@ -1,0 +1,25 @@
+<button onclick="sign()">Sign Message</button>
+<pre id="log"></pre>
+
+<script>
+const log = m => document.getElementById("log").textContent += m + "\n";
+
+async function sign() {
+  try {
+    const acc = await ethereum.request({
+      method: "eth_accounts"
+    });
+
+    const msg = "0x68656c6c6f"; // "hello" hex
+
+    const sig = await ethereum.request({
+      method: "personal_sign",
+      params: [msg, acc[0]]
+    });
+
+    log("Signature: " + sig);
+  } catch (e) {
+    log("Sign failed: " + e.message);
+  }
+}
+</script>
