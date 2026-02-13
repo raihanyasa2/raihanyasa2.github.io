@@ -1,0 +1,29 @@
+<button onclick="request()">Request Accounts</button>
+<button onclick="silent()">Silent eth_accounts</button>
+<pre id="log"></pre>
+
+<script>
+const log = m => document.getElementById("log").textContent += m + "\n";
+
+async function request() {
+  try {
+    const acc = await ethereum.request({
+      method: "eth_requestAccounts"
+    });
+    log("Connected: " + acc[0]);
+  } catch (e) {
+    log("Error: " + e.message);
+  }
+}
+
+async function silent() {
+  try {
+    const acc = await ethereum.request({
+      method: "eth_accounts"
+    });
+    log("Silent accounts: " + JSON.stringify(acc));
+  } catch (e) {
+    log("Error: " + e.message);
+  }
+}
+</script>
