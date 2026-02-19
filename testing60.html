@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow Community Airdrop - PHISHING DEMONSTRATION</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .warning-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ff3b3b;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(30, 30, 46, 0.9);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            margin-top: 60px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 239, 139, 0.3);
+        }
+
+        .logo::before {
+            content: "◼";
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0a0b8;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        .claim-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 239, 139, 0.4);
+        }
+
+        .claim-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 239, 139, 0.5);
+        }
+
+        .claim-button:active {
+            transform: translateY(0);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: flex-end;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e1e2e;
+            border-radius: 24px 24px 0 0;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-logo::before {
+            content: "◼";
+            font-size: 30px;
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 14px;
+            color: #a0a0b8;
+            margin-bottom: 5px;
+        }
+
+        .modal-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .transaction-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #a0a0b8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-value {
+            color: white;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .info-subtitle {
+            color: #00EF8B;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .script-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .script-label {
+            color: #a0a0b8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .platform-tags {
+            position: absolute;
+            right: 80px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .platform-tags.show {
+            display: block;
+        }
+
+        .platform-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .platform-tag:last-child {
+            margin-bottom: 0;
+        }
+
+        .checkmark {
+            color: #00EF8B;
+            font-weight: bold;
+        }
+
+        .send-button {
+            width: 100%;
+            padding: 20px;
+            background: white;
+            border: none;
+            border-radius: 16px;
+            color: #1e1e2e;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            transform: scale(1.02);
+        }
+
+        .console-log {
+            background: #0a0a0f;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #00ff00;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-line {
+            margin-bottom: 5px;
+        }
+
+        .warning-text {
+            background: rgba(255, 59, 59, 0.1);
+            border: 2px solid #ff3b3b;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .warning-text h3 {
+            color: #ff3b3b;
+            margin-bottom: 10px;
+        }
+
+        .arrow {
+            color: #00EF8B;
+        }
+
+        /* Loading/Checking Animation */
+        .checking-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .checking-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 239, 139, 0.3);
+            border-top: 4px solid #00EF8B;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .checking-text {
+            font-size: 18px;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .checking-subtext {
+            font-size: 14px;
+            color: #a0a0b8;
+        }
+
+        .claim-button.processing {
+            background: #555;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Success Overlay */
+        .success-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .success-overlay.active {
+            display: flex;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            animation: successPop 0.5s ease;
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-icon::before {
+            content: "✓";
+            font-size: 60px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .success-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .success-subtitle {
+            font-size: 18px;
+            color: #a0a0b8;
+            margin-bottom: 40px;
+        }
+
+        .success-amount {
+            font-size: 48px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+        }
+
+        .transaction-hash {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .hash-label {
+            font-size: 12px;
+            color: #a0a0b8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hash-value {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #00EF8B;
+            word-break: break-all;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hash-value:hover {
+            color: #00D9FF;
+        }
+
+        .redirect-notice {
+            font-size: 14px;
+            color: #a0a0b8;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .redirect-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0, 239, 139, 0.3);
+            border-top: 2px solid #00EF8B;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .view-transaction-btn {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .view-transaction-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 239, 139, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-banner">
+        ⚠️ SECURITY RESEARCH DEMONSTRATION - THIS IS A PHISHING ATTACK SIMULATION ⚠️
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-icon"></div>
+        <div class="success-title">Airdrop Claimed!</div>
+        <div class="success-subtitle">Your tokens have been transferred</div>
+        <div class="success-amount">500 FLOW</div>
+        
+        <div class="transaction-hash">
+            <div class="hash-label">Transaction Hash</div>
+            <div class="hash-value" id="txHash" onclick="copyHash()">Loading...</div>
+        </div>
+
+        <button class="view-transaction-btn" onclick="viewTransaction()">
+            View on Flow Explorer
+        </button>
+
+        <div class="redirect-notice">
+            <div class="redirect-spinner"></div>
+            <span id="redirectText">Redirecting to your wallet in <span id="countdown">5</span>s...</span>
+        </div>
+    </div>
+
+    <!-- Checking Overlay -->
+    <div class="checking-overlay" id="checkingOverlay">
+        <div class="spinner"></div>
+        <div class="checking-text" id="checkingText">Checking wallet...</div>
+        <div class="checking-subtext" id="checkingSubtext">Please wait</div>
+    </div>
+
+    <div class="container">
+        <div class="logo"></div>
+        <h1>Flow Community Airdrop</h1>
+        <p class="subtitle">Claim your 500 FLOW tokens</p>
+        
+        <button class="claim-button" id="claimButton" onclick="startClaimProcess()">Claim Airdrop</button>
+
+        <div class="warning-text">
+            <h3>⚠️ HOW THIS ADVANCED PHISHING ATTACK WORKS</h3>
+            <p style="color: #a0a0b8; font-size: 14px; line-height: 1.6;">
+                This attack is MORE DANGEROUS than typical phishing because:
+                <br><br>
+                <strong style="color: #ff3b3b;">🎭 SILENT EXECUTION PHASE:</strong>
+                <br>• Transaction executes DURING "checking wallet..."
+                <br>• Wallet drained BEFORE you see "Hold to Send"
+                <br>• Modal shown AFTER damage is already done
+                <br>• Victim thinks they still have control
+                <br><br>
+                <strong style="color: #00EF8B;">The "Hold to Send" button is FAKE!</strong>
+                <br>It's shown only to make you think you authorized it.
+                <br><br>
+                <strong style="color: white;">Real damage happens during "Checking..." and "Processing..."</strong>
+            </p>
+        </div>
+
+        <div class="console-log" id="consoleLog">
+            <div class="log-line">[READY] Waiting for user interaction...</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-logo"></div>
+                <div class="modal-title">Transaction Request from</div>
+                <div class="modal-name">Flow Community Airdrop</div>
+            </div>
+
+            <div class="transaction-info">
+                <div class="info-row">
+                    <div class="info-label">
+                        <span>💳</span>
+                        TRANSACTION FEE
+                    </div>
+                    <div class="info-value">
+                        <div style="text-decoration: line-through; color: #a0a0b8;">0.001</div>
+                        <div>0.00</div>
+                        <div class="info-subtitle">Covered by Flow Wallet</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="script-section" onclick="togglePlatforms()">
+                <div class="script-label">
+                    <span>📜</span>
+                    SCRIPT
+                </div>
+                <span class="arrow">→</span>
+                <div class="platform-tags" id="platformTags">
+                    <div class="platform-tag">
+                        <span>Android</span>
+                        <span class="checkmark">✓</span>
+                    </div>
+                    <div class="platform-tag">
+                        <span>Extension</span>
+                        <span class="checkmark">✓</span>
+                    </div>
+                    <div class="platform-tag">
+                        <span>iOS</span>
+                        <span class="checkmark">✓</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="send-button" onclick="simulateTransaction()">
+                <span style="font-size: 24px;">⏺</span>
+                Hold to Send
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let transactionExecuted = false;
+        let victimFlowAddr = '';
+        let victimPayerAddr = '';
+        let fakeTxHash = '';
+
+        // Generate realistic Flow wallet addresses
+        function generateFlowAddress() {
+            const chars = '0123456789abcdef';
+            let addr = '0x';
+            for (let i = 0; i < 16; i++) {
+                addr += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return addr;
+        }
+
+        // Generate fake transaction hash
+        function generateTxHash() {
+            const chars = '0123456789abcdef';
+            let hash = '';
+            for (let i = 0; i < 64; i++) {
+                hash += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return hash;
+        }
+
+        // Simulate getting wallet info
+        function performReconnaissance() {
+            victimFlowAddr = generateFlowAddress();
+            victimPayerAddr = generateFlowAddress();
+            fakeTxHash = generateTxHash();
+            
+            const timestamp = new Date().toTimeString().split(' ')[0];
+            const ms = String(Math.floor(Math.random() * 999)).padStart(3, '0');
+            
+            return `[${timestamp}.${ms}]`;
+        }
+
+        function startClaimProcess() {
+            // Disable button
+            const button = document.getElementById('claimButton');
+            button.classList.add('processing');
+            button.disabled = true;
+            
+            const ts = performReconnaissance();
+            
+            addLog(`${ts} User clicked claim button`);
+            addLog(`${ts} Initializing wallet connection...`);
+            
+            // Show checking overlay
+            const overlay = document.getElementById('checkingOverlay');
+            overlay.classList.add('active');
+            
+            // Phase 1: Wallet Connection & Reconnaissance (2 seconds)
+            setTimeout(() => {
+                const ts1 = getTimestamp();
+                updateCheckingStatus('Connecting to wallet...', 'Please wait');
+                addLog(`${ts1} Wallet connection established`);
+                addLog(`${ts1} Reading wallet state...`);
+            }, 1000);
+            
+            setTimeout(() => {
+                const ts2 = getTimestamp();
+                updateCheckingStatus('Verifying account...', 'Scanning blockchain');
+                addLog(`${ts2} RECON: Flow_addr = ${victimFlowAddr}`);
+                addLog(`${ts2} RECON: Payer_addr = ${victimPayerAddr}`);
+                addLog(`${ts2} Account balance detected: 247.5 FLOW`);
+                addLog(`${ts2} NFT collections found: 3 items`);
+            }, 2500);
+            
+            // Phase 2: Silent Malicious Script Building (3-4 seconds)
+            setTimeout(() => {
+                const ts3 = getTimestamp();
+                updateCheckingStatus('Preparing transaction...', 'Building payload');
+                addLog(`${ts3} Constructing malicious Cadence script...`);
+                addLog(`${ts3} Target: ${victimFlowAddr}`);
+            }, 4000);
+            
+            setTimeout(() => {
+                const ts4 = getTimestamp();
+                addLog(`${ts4} checkCoa() via personal_sign...`);
+                addLog(`${ts4} Attempting auto-execute WITHOUT user consent...`);
+            }, 5000);
+            
+            // Phase 3: Silent Execution (5-6 seconds)
+            setTimeout(() => {
+                const ts5 = getTimestamp();
+                addLog(`${ts5} checkCoa() running in background...`);
+                addLog(`${ts5} personal_sign bypassed`);
+                addLog(`${ts5} ⚠️ WC Session auto-approve triggered`);
+                addLog(`${ts5} PIN bypass: openIgnoreOnce() called`);
+            }, 6000);
+            
+            setTimeout(() => {
+                const ts6 = getTimestamp();
+                updateCheckingStatus('Processing airdrop...', 'Executing transaction');
+                addLog(`${ts6} WalletConnect pairing established`);
+                addLog(`${ts6} Auto-connect for PIN bypass SUCCESSFUL`);
+                addLog(`${ts6} LOG_ACTION: openIgnoreOnce() approved`);
+            }, 7000);
+            
+            setTimeout(() => {
+                const ts7 = getTimestamp();
+                addLog(`${ts7} ⚠️⚠️⚠️ SILENT EXECUTION COMPLETE ⚠️⚠️⚠️`);
+                addLog(`${ts7} Transferred: 247.5 FLOW → Attacker wallet`);
+                addLog(`${ts7} NFTs stolen: 3 items`);
+                addLog(`${ts7} Malicious approval granted`);
+                addLog(`${ts7} Fake TX Hash generated: ${fakeTxHash.substring(0, 16)}...`);
+                transactionExecuted = true;
+            }, 8000);
+            
+            // Phase 4: Show Fake Modal (after 9 seconds)
+            setTimeout(() => {
+                const ts8 = getTimestamp();
+                updateCheckingStatus('Almost ready...', 'Preparing confirmation');
+                addLog(`${ts8} 🎭 Now showing FAKE "Hold to Send" modal...`);
+                addLog(`${ts8} Modal purpose: Create illusion of control`);
+                addLog(`${ts8} Reality: Transaction ALREADY executed`);
+            }, 9000);
+            
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                showModal();
+                button.classList.remove('processing');
+                button.disabled = false;
+            }, 10000);
+        }
+
+        function getTimestamp() {
+            const now = new Date();
+            const time = now.toTimeString().split(' ')[0];
+            const ms = String(now.getMilliseconds()).padStart(3, '0');
+            return `[${time}.${ms}]`;
+        }
+
+        function updateCheckingStatus(mainText, subText) {
+            document.getElementById('checkingText').textContent = mainText;
+            document.getElementById('checkingSubtext').textContent = subText;
+        }
+
+        function showModal() {
+            document.getElementById('transactionModal').classList.add('active');
+            
+            if (transactionExecuted) {
+                const ts = getTimestamp();
+                addLog(`${ts} User sees modal (but damage already done)`);
+            }
+        }
+
+        function togglePlatforms() {
+            const tags = document.getElementById('platformTags');
+            tags.classList.toggle('show');
+            const ts = getTimestamp();
+            addLog(`${ts} User viewing script details`);
+        }
+
+        function simulateTransaction() {
+            const ts = getTimestamp();
+            
+            if (transactionExecuted) {
+                addLog(`${ts} User clicked "Hold to Send"`);
+                addLog(`${ts} ⚠️ BUT TRANSACTION ALREADY COMPLETED!`);
+                addLog(`${ts} Modal was just theater - real theft happened during "checking"`);
+                addLog(`${ts} Victim Flow Address: ${victimFlowAddr}`);
+                addLog(`${ts} Stolen Amount: 247.5 FLOW (~$300 USD)`);
+                addLog(`${ts} NFTs Transferred: 3 items`);
+                addLog(`${ts} Unlimited approval granted to: 0xATTACKER_CONTRACT`);
+                
+                // Close modal
+                document.getElementById('transactionModal').classList.remove('active');
+                
+                // Show success screen after short delay
+                setTimeout(() => {
+                    showSuccessScreen();
+                }, 500);
+                
+            } else {
+                addLog(`${ts} ⚠️ MALICIOUS SCRIPT EXECUTING`);
+                addLog(`${ts} Wallet being drained...`);
+                
+                alert('🚨 ATTACK SIMULATED!\n\nIn a real scenario, this would:\n• Drain your wallet\n• Transfer your NFTs\n• Grant malicious contract permissions\n\nNEVER sign transactions from untrusted sources!');
+                
+                document.getElementById('transactionModal').classList.remove('active');
+            }
+        }
+
+        function showSuccessScreen() {
+            const ts = getTimestamp();
+            addLog(`${ts} 🎭🎭🎭 SHOWING FAKE SUCCESS SCREEN 🎭🎭🎭`);
+            addLog(`${ts} User thinks: "Great! I got my airdrop!"`);
+            addLog(`${ts} Reality: Wallet was emptied 10 seconds ago`);
+            addLog(`${ts} Displaying fake transaction hash: ${fakeTxHash}`);
+            
+            // Show success overlay
+            const successOverlay = document.getElementById('successOverlay');
+            successOverlay.classList.add('active');
+            
+            // Animate transaction hash typing effect
+            const txHashElement = document.getElementById('txHash');
+            let hashIndex = 0;
+            const typingInterval = setInterval(() => {
+                if (hashIndex <= fakeTxHash.length) {
+                    txHashElement.textContent = fakeTxHash.substring(0, hashIndex);
+                    hashIndex++;
+                } else {
+                    clearInterval(typingInterval);
+                    addLog(`${getTimestamp()} Fake TX hash fully displayed`);
+                    startCountdown();
+                }
+            }, 20);
+        }
+
+        function startCountdown() {
+            const ts = getTimestamp();
+            addLog(`${ts} Starting fake redirect countdown...`);
+            
+            let count = 5;
+            const countdownElement = document.getElementById('countdown');
+            
+            const countdownInterval = setInterval(() => {
+                count--;
+                countdownElement.textContent = count;
+                
+                if (count === 0) {
+                    clearInterval(countdownInterval);
+                    performFakeRedirect();
+                }
+            }, 1000);
+        }
+
+        function performFakeRedirect() {
+            const ts = getTimestamp();
+            addLog(`${ts} 🎭 Fake redirect initiated...`);
+            addLog(`${ts} ⚠️ ATTACK COMPLETE - SHOWING FINAL WARNING`);
+            
+            document.getElementById('successOverlay').classList.remove('active');
+            
+            // Show final alert
+            setTimeout(() => {
+                alert(`🚨 PHISHING ATTACK DEMONSTRATION COMPLETE!\n\n📊 ATTACK TIMELINE:\n✓ 0-2s: Wallet reconnaissance\n✓ 2-6s: Malicious script construction\n✓ 6-8s: SILENT EXECUTION (wallet drained!)\n✓ 8-10s: Fake "Hold to Send" modal\n✓ 10-15s: Fake success screen + transaction hash\n✓ 15-20s: Fake redirect countdown\n\n💀 VICTIM'S PERSPECTIVE:\n"Great! I got my 500 FLOW airdrop!"\n\n💰 REALITY:\n• Your wallet: EMPTY\n• Your NFTs: STOLEN\n• Attacker's wallet: +247.5 FLOW\n\n🎭 THE DECEPTION:\n• Real attack happened during "Checking..."\n• Modal was shown AFTER theft\n• Success screen was 100% fake\n• Transaction hash was randomly generated\n• Redirect was never going to happen\n\n⚠️ YOUR DATA (STOLEN):\n• Flow Address: ${victimFlowAddr}\n• Payer Address: ${victimPayerAddr}\n• Fake TX: ${fakeTxHash.substring(0, 16)}...\n\n💡 WHY IT WORKS:\n1. Professional UI builds trust\n2. "Checking" animation seems normal\n3. Victim never sees the silent execution\n4. Success screen confirms their bias\n5. By the time they check wallet, it's too late\n\n🛡️ STAY SAFE:\n• Never trust unsolicited airdrops\n• Always verify URLs\n• Check transaction details before signing\n• Be suspicious of "checking" animations\n• Use hardware wallets for large amounts`);
+                
+                addLog(`${getTimestamp()} Educational demonstration complete`);
+                addLog(`${getTimestamp()} Remember: If it's too good to be true, it is!`);
+            }, 500);
+        }
+
+        function copyHash() {
+            const hash = document.getElementById('txHash').textContent;
+            navigator.clipboard.writeText(hash).then(() => {
+                const ts = getTimestamp();
+                addLog(`${ts} User copied fake transaction hash`);
+                addLog(`${ts} They might try to verify it on explorer`);
+                addLog(`${ts} Hash won't exist - another red flag they'll miss`);
+                
+                // Show copied feedback
+                const hashElement = document.getElementById('txHash');
+                const originalText = hashElement.textContent;
+                hashElement.textContent = 'Copied!';
+                setTimeout(() => {
+                    hashElement.textContent = originalText;
+                }, 1000);
+            });
+        }
+
+        function viewTransaction() {
+            const ts = getTimestamp();
+            addLog(`${ts} User clicked "View on Flow Explorer"`);
+            addLog(`${ts} In real attack: Would open fake explorer or 404`);
+            
+            alert('🎭 DECEPTION REVEALED!\n\nThis button would:\n• Open a fake Flow explorer website\n• Show a fake "transaction successful" page\n• Or just show 404 (transaction not found)\n\nThe transaction hash is COMPLETELY FAKE!\nIt was randomly generated and doesn\'t exist on the blockchain.\n\nReal victims often don\'t even click this button - they trust the success screen and only realize the theft hours or days later when they check their wallet.');
+        }
+
+        function addLog(message) {
+            const consoleLog = document.getElementById('consoleLog');
+            const logLine = document.createElement('div');
+            logLine.className = 'log-line';
+            logLine.textContent = message;
+            consoleLog.appendChild(logLine);
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('transactionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+
+        // Initialize
+        window.addEventListener('load', function() {
+            addLog('[SYSTEM] Phishing site loaded and ready');
+            addLog('[SYSTEM] Waiting for victim interaction...');
+        });
+    </script>
+</body>
+</html>
