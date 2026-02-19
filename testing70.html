@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow Wallet: Normal vs Malicious Flow Comparison</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #a0a0b8;
+            font-size: 16px;
+        }
+
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .flow-column {
+            background: #1e1e2e;
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid transparent;
+        }
+
+        .flow-column.normal {
+            border-color: #00EF8B;
+        }
+
+        .flow-column.malicious {
+            border-color: #ff3b3b;
+        }
+
+        .column-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .column-header h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .normal h2 {
+            color: #00EF8B;
+        }
+
+        .malicious h2 {
+            color: #ff3b3b;
+        }
+
+        .column-header .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .normal .badge {
+            background: rgba(0, 239, 139, 0.2);
+            color: #00EF8B;
+        }
+
+        .malicious .badge {
+            background: rgba(255, 59, 59, 0.2);
+            color: #ff3b3b;
+        }
+
+        .flow-step {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+            position: relative;
+        }
+
+        .normal .flow-step {
+            border-left-color: #00EF8B;
+        }
+
+        .malicious .flow-step {
+            border-left-color: #ff3b3b;
+        }
+
+        .step-time {
+            font-size: 12px;
+            font-weight: 600;
+            color: #00D9FF;
+            margin-bottom: 8px;
+        }
+
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: #a0a0b8;
+            line-height: 1.5;
+        }
+
+        .step-reality {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 59, 59, 0.1);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #ff3b3b;
+            border: 1px solid rgba(255, 59, 59, 0.3);
+        }
+
+        .step-reality::before {
+            content: "💀 REALITY: ";
+            font-weight: 600;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-normal {
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            color: white;
+        }
+
+        .btn-malicious {
+            background: linear-gradient(135deg, #ff3b3b 0%, #ff6b6b 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .timeline-viz {
+            background: #1e1e2e;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .timeline-viz h3 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .timeline-row {
+            margin-bottom: 40px;
+        }
+
+        .timeline-label {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .timeline-bar {
+            position: relative;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: visible;
+        }
+
+        .timeline-segment {
+            position: absolute;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-segment:hover {
+            transform: translateY(-5px);
+            z-index: 10;
+        }
+
+        .seg-connect { background: #4a90e2; left: 0%; width: 15%; }
+        .seg-show { background: #7b68ee; left: 15%; width: 25%; }
+        .seg-approve { background: #ffa500; left: 40%; width: 20%; }
+        .seg-execute { background: #00EF8B; left: 60%; width: 25%; }
+        .seg-done { background: #00D9FF; left: 85%; width: 15%; }
+
+        .seg-recon { background: #ff6b6b; left: 10%; width: 20%; }
+        .seg-steal { background: #ff3b3b; left: 30%; width: 25%; }
+        .seg-theater { background: #8b00ff; left: 55%; width: 20%; }
+        .seg-fake { background: #ff1493; left: 75%; width: 25%; }
+
+        .console-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .console-box {
+            background: #0a0a0f;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .console-box h4 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .log-line {
+            margin-bottom: 5px;
+            color: #00ff00;
+        }
+
+        .log-line.warning {
+            color: #ffa500;
+        }
+
+        .log-line.danger {
+            color: #ff3b3b;
+        }
+
+        .log-line.info {
+            color: #00D9FF;
+        }
+
+        .key-differences {
+            background: #1e1e2e;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .key-differences h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .diff-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .diff-table th,
+        .diff-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .diff-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+
+        .diff-table td:nth-child(2) {
+            color: #00EF8B;
+        }
+
+        .diff-table td:nth-child(3) {
+            color: #ff3b3b;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-container,
+            .console-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-segment {
+                font-size: 10px;
+            }
+        }
+
+        .demo-wallet {
+            background: #2a2a3e;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .wallet-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .wallet-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .wallet-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .wallet-label {
+            font-size: 12px;
+            color: #a0a0b8;
+            margin-bottom: 5px;
+        }
+
+        .wallet-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 239, 139, 0.4);
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, #ff3b3b 0%, #ff6b6b 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Flow Wallet: Normal vs Malicious Flow</h1>
+        <p>Interactive comparison showing how a legitimate wallet flow differs from a phishing attack</p>
+    </div>
+
+    <div class="control-buttons">
+        <button class="btn btn-normal" onclick="animateNormalFlow()">▶️ Play Normal Flow</button>
+        <button class="btn btn-malicious" onclick="animateMaliciousFlow()">▶️ Play Malicious Flow</button>
+        <button class="btn" style="background: #555;" onclick="resetAll()">🔄 Reset</button>
+    </div>
+
+    <div class="timeline-viz">
+        <h3>⏱️ Timeline Visualization</h3>
+        
+        <div class="timeline-row">
+            <div class="timeline-label" style="color: #00EF8B;">✅ Normal Flow (Safe)</div>
+            <div class="timeline-bar" id="normalTimeline">
+                <div class="timeline-segment seg-connect">Connect</div>
+                <div class="timeline-segment seg-show">Show TX Details</div>
+                <div class="timeline-segment seg-approve">User Approves</div>
+                <div class="timeline-segment seg-execute">EXECUTE</div>
+                <div class="timeline-segment seg-done">Success</div>
+            </div>
+        </div>
+
+        <div class="timeline-row">
+            <div class="timeline-label" style="color: #ff3b3b;">💀 Malicious Flow (Dangerous)</div>
+            <div class="timeline-bar" id="maliciousTimeline">
+                <div class="timeline-segment seg-connect">Connect</div>
+                <div class="timeline-segment seg-recon">Recon</div>
+                <div class="timeline-segment seg-steal">💀 STEAL</div>
+                <div class="timeline-segment seg-theater">Fake Modal</div>
+                <div class="timeline-segment seg-fake">Fake Success</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comparison-container">
+        <!-- Normal Flow -->
+        <div class="flow-column normal">
+            <div class="column-header">
+                <h2>✅ Normal Flow</h2>
+                <span class="badge">Safe & Legitimate</span>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 0-2 seconds</div>
+                <div class="step-title">1. Connection Request</div>
+                <div class="step-description">
+                    DApp requests wallet connection. User sees clear permission request explaining what access is being granted.
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 2-3 seconds</div>
+                <div class="step-title">2. Session Established</div>
+                <div class="step-description">
+                    Wallet connection approved. <strong>NO transactions can execute without explicit approval.</strong>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 3-5 seconds (later)</div>
+                <div class="step-title">3. Transaction Details Shown</div>
+                <div class="step-description">
+                    When DApp needs a transaction, wallet IMMEDIATELY shows:<br>
+                    • FROM address (your wallet)<br>
+                    • TO address (recipient)<br>
+                    • AMOUNT (exact value)<br>
+                    • GAS fees<br>
+                    • Contract function details
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 5-10 seconds</div>
+                <div class="step-title">4. User Reviews & Approves</div>
+                <div class="step-description">
+                    User takes time to review. Can reject or approve. Must hold "Hold to Send" button deliberately.
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 10-12 seconds</div>
+                <div class="step-title">5. Transaction Executes</div>
+                <div class="step-description">
+                    <strong>ONLY AFTER approval</strong>, transaction is sent to blockchain. User sees pending status.
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 12-15 seconds</div>
+                <div class="step-title">6. Real Success Confirmation</div>
+                <div class="step-description">
+                    Real transaction hash from blockchain shown. Can be verified on Flow explorer. Transaction is genuine.
+                </div>
+            </div>
+        </div>
+
+        <!-- Malicious Flow -->
+        <div class="flow-column malicious">
+            <div class="column-header">
+                <h2>💀 Malicious Flow</h2>
+                <span class="badge">Dangerous Phishing</span>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 0-1 seconds</div>
+                <div class="step-title">1. Fake "Claim Airdrop" Button</div>
+                <div class="step-description">
+                    User clicks innocent-looking button. Site shows "Connecting..." overlay.
+                </div>
+                <div class="step-reality">User thinks it's normal loading. Attack sequence begins.</div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 1-3 seconds</div>
+                <div class="step-title">2. Silent Reconnaissance</div>
+                <div class="step-description">
+                    Site displays: "Verifying account..."
+                </div>
+                <div class="step-reality">Scanning your wallet address, reading balance (247.5 FLOW), finding NFT collections.</div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 3-6 seconds</div>
+                <div class="step-title">3. Malicious Script Construction</div>
+                <div class="step-description">
+                    Site displays: "Preparing transaction..."
+                </div>
+                <div class="step-reality">Building Cadence script to drain ALL your FLOW tokens and steal ALL your NFTs.</div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 6-8 seconds</div>
+                <div class="step-title">4. 💀 SILENT EXECUTION 💀</div>
+                <div class="step-description">
+                    Site displays: "Processing airdrop..."
+                </div>
+                <div class="step-reality">WALLET BEING DRAINED! 247.5 FLOW stolen. 3 NFTs transferred to attacker. You see nothing.</div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 8-10 seconds</div>
+                <div class="step-title">5. 🎭 Fake "Hold to Send" Modal</div>
+                <div class="step-description">
+                    NOW the modal appears. Shows "Transaction Fee: 0.00" and platform badges.
+                </div>
+                <div class="step-reality">Pure theater. Transaction completed 2 seconds ago. This modal is meaningless.</div>
+            </div>
+
+            <div class="flow-step">
+                <div class="step-time">⏱️ 10-15 seconds</div>
+                <div class="step-title">6. 🎊 Fake Success Screen</div>
+                <div class="step-description">
+                    Shows "500 FLOW received!" with fake transaction hash and countdown.
+                </div>
+                <div class="step-reality">You received NOTHING. Lost 247.5 FLOW. TX hash is random. Wallet is empty.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="key-differences">
+        <h3>🎯 Critical Differences</h3>
+        <table class="diff-table">
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Normal Flow ✅</th>
+                    <th>Malicious Flow 💀</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Transaction Timing</strong></td>
+                    <td>Executes AFTER user approval</td>
+                    <td>Executes BEFORE modal shown</td>
+                </tr>
+                <tr>
+                    <td><strong>User Control</strong></td>
+                    <td>Full control at every step</td>
+                    <td>Zero control, pure theater</td>
+                </tr>
+                <tr>
+                    <td><strong>Transaction Details</strong></td>
+                    <td>Full disclosure shown first</td>
+                    <td>Completely hidden</td>
+                </tr>
+                <tr>
+                    <td><strong>Modal Purpose</strong></td>
+                    <td>Actual approval gate</td>
+                    <td>Fake UI for deception</td>
+                </tr>
+                <tr>
+                    <td><strong>Gas Fees</strong></td>
+                    <td>Real fees displayed</td>
+                    <td>Fake "0.00" shown</td>
+                </tr>
+                <tr>
+                    <td><strong>Success Screen</strong></td>
+                    <td>Real TX hash from blockchain</td>
+                    <td>Random fake hash</td>
+                </tr>
+                <tr>
+                    <td><strong>Verification</strong></td>
+                    <td>Hash verifiable on explorer</td>
+                    <td>Hash doesn't exist</td>
+                </tr>
+                <tr>
+                    <td><strong>Discovery Time</strong></td>
+                    <td>Immediate (user knows)</td>
+                    <td>Hours/days later</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="console-comparison">
+        <div class="console-box">
+            <h4 style="color: #00EF8B;">✅ Normal Flow Console</h4>
+            <div id="normalConsole">
+                <div class="log-line info">[10:30:00] DApp loaded</div>
+                <div class="log-line info">[10:30:05] User clicked "Connect"</div>
+                <div class="log-line info">[10:30:07] ✅ Connection approved</div>
+                <div class="log-line">[10:30:07] Session established</div>
+                <div class="log-line">[10:32:15] DApp requesting transaction</div>
+                <div class="log-line warning">[10:32:15] Showing TX preview to user</div>
+                <div class="log-line warning">[10:32:15] Waiting for approval...</div>
+                <div class="log-line">[10:32:20] ✅ User approved</div>
+                <div class="log-line info">[10:32:20] NOW submitting to blockchain</div>
+                <div class="log-line">[10:32:25] ✅ TX confirmed</div>
+                <div class="log-line">[10:32:25] Hash: 0xabc123... (REAL)</div>
+            </div>
+        </div>
+
+        <div class="console-box">
+            <h4 style="color: #ff3b3b;">💀 Malicious Flow Console</h4>
+            <div id="maliciousConsole">
+                <div class="log-line info">[10:30:00] Phishing site loaded</div>
+                <div class="log-line info">[10:30:00] User clicked "Claim"</div>
+                <div class="log-line warning">[10:30:01] 🎯 Reconnaissance started</div>
+                <div class="log-line danger">[10:30:01] RECON: Address 0x3a7f2c...</div>
+                <div class="log-line danger">[10:30:01] RECON: Balance 247.5 FLOW</div>
+                <div class="log-line danger">[10:30:03] Building drain script...</div>
+                <div class="log-line danger">[10:30:05] 💀 SILENT EXECUTION!</div>
+                <div class="log-line danger">[10:30:07] Withdrawing 247.5 FLOW...</div>
+                <div class="log-line danger">[10:30:08] ⚠️ THEFT COMPLETE</div>
+                <div class="log-line warning">[10:30:10] 🎭 Showing fake modal</div>
+                <div class="log-line warning">[10:30:12] User clicked (too late)</div>
+                <div class="log-line warning">[10:30:15] Fake success shown</div>
+                <div class="log-line info">[10:30:15] User leaves happy 😊</div>
+                <div class="log-line danger">[16:45:00] User discovers theft 😱</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function animateNormalFlow() {
+            alert('▶️ NORMAL FLOW DEMONSTRATION\n\nWatch how each step happens in the CORRECT order:\n\n1. Connect wallet\n2. Session established\n3. Transaction details SHOWN FIRST\n4. User reviews and approves\n5. THEN transaction executes\n6. Real success with verifiable TX hash\n\n✅ User has full control at every step!');
+        }
+
+        function animateMaliciousFlow() {
+            alert('💀 MALICIOUS FLOW DEMONSTRATION\n\nWatch how the attack INVERTS the timeline:\n\n1. User clicks "Claim Airdrop"\n2. Site shows "Checking..." (reconnaissance)\n3. Site shows "Processing..." (💀 STEALING)\n4. THEFT COMPLETES during loading\n5. THEN fake modal shown (theater)\n6. Fake success screen (deception)\n\n⚠️ By the time user sees modal, wallet is already empty!\n\nThis is why it\'s so dangerous - victims don\'t realize until hours later.');
+        }
+
+        function resetAll() {
+            location.reload();
+        }
+
+        // Add hover effects
+        document.querySelectorAll('.flow-step').forEach(step => {
+            step.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(10px)';
+            });
+            step.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Timeline segment info on hover
+        document.querySelectorAll('.timeline-segment').forEach(seg => {
+            seg.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.05)';
+            });
+            seg.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
