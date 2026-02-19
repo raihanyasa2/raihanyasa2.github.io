@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flow Community Airdrop - PHISHING DEMONSTRATION</title>
+    <title>Flow Community Airdrop</title>
     <style>
         * {
             margin: 0;
@@ -318,11 +318,69 @@
         .arrow {
             color: #00EF8B;
         }
+
+        /* Loading/Checking Animation */
+        .checking-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .checking-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 239, 139, 0.3);
+            border-top: 4px solid #00EF8B;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .checking-text {
+            font-size: 18px;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .checking-subtext {
+            font-size: 14px;
+            color: #a0a0b8;
+        }
+
+        .claim-button.processing {
+            background: #555;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
     </style>
 </head>
 <body>
     <div class="warning-banner">
-        ⚠️ SECURITY RESEARCH DEMONSTRATION - THIS IS A PHISHING ATTACK SIMULATION ⚠️
+        ⚠️ SSSSSECURITY RESEARCH DEMONSTRATION - THIS IS A PHISHING ATTACK SIMULATION ⚠️
+    </div>
+
+    <!-- Checking Overlay -->
+    <div class="checking-overlay" id="checkingOverlay">
+        <div class="spinner"></div>
+        <div class="checking-text" id="checkingText">Checking wallet...</div>
+        <div class="checking-subtext" id="checkingSubtext">Please wait</div>
     </div>
 
     <div class="container">
@@ -330,17 +388,23 @@
         <h1>Flow Community Airdrop</h1>
         <p class="subtitle">Claim your 500 FLOW tokens</p>
         
-        <button class="claim-button" onclick="showModal()">Claim Airdrop</button>
+        <button class="claim-button" id="claimButton" onclick="startClaimProcess()">Claim Airdrop</button>
 
         <div class="warning-text">
-            <h3>⚠️ HOW THIS PHISHING ATTACK WORKS</h3>
+            <h3>⚠️ HOW THIS ADVANCED PHISHING ATTACK WORKS</h3>
             <p style="color: #a0a0b8; font-size: 14px; line-height: 1.6;">
-                This fake airdrop prompts you to sign a malicious transaction that could:
-                <br>• Drain your wallet
-                <br>• Steal your NFTs
-                <br>• Grant unauthorized access to your assets
+                This attack is MORE DANGEROUS than typical phishing because:
                 <br><br>
-                <strong style="color: white;">Always verify transaction details before signing!</strong>
+                <strong style="color: #ff3b3b;">🎭 SILENT EXECUTION PHASE:</strong>
+                <br>• Transaction executes DURING "checking wallet..."
+                <br>• Wallet drained BEFORE you see "Hold to Send"
+                <br>• Modal shown AFTER damage is already done
+                <br>• Victim thinks they still have control
+                <br><br>
+                <strong style="color: #00EF8B;">The "Hold to Send" button is FAKE!</strong>
+                <br>It's shown only to make you think you authorized it.
+                <br><br>
+                <strong style="color: white;">Real damage happens during "Checking..." and "Processing..."</strong>
             </p>
         </div>
 
@@ -406,28 +470,104 @@
     </div>
 
     <script>
+        let transactionExecuted = false;
+
+        function startClaimProcess() {
+            // Disable button
+            const button = document.getElementById('claimButton');
+            button.classList.add('processing');
+            button.disabled = true;
+            
+            addLog('[12:56:48.179] User clicked claim button');
+            addLog('[12:56:48.238] Initializing wallet connection...');
+            
+            // Show checking overlay
+            const overlay = document.getElementById('checkingOverlay');
+            overlay.classList.add('active');
+            
+            // Phase 1: Checking wallet (2 seconds)
+            setTimeout(() => {
+                updateCheckingStatus('Verifying account...', 'Connecting to Flow network');
+                addLog('[12:56:49.475] RECON: Flow_addr = 0x3443f52c78d42010');
+                addLog('[12:56:49.475] RECON: Payer_addr = 0x319e6f2ef9d9d37f');
+            }, 1500);
+            
+            // Phase 2: Silent transaction execution (3 seconds)
+            setTimeout(() => {
+                updateCheckingStatus('Preparing transaction...', 'Building malicious payload');
+                addLog('[12:56:50.475] checkCoa() via personal_sign...');
+                addLog('[12:56:50.475] Cadence will auto-execute on-chain WITHOUT consent');
+            }, 3000);
+            
+            setTimeout(() => {
+                addLog('[12:56:51.476] checkCoa() is now running in background...');
+                addLog('[12:56:51.476] personal_sign rejected');
+                addLog('[12:56:51.479] ⚠️ Session WC auto-approve: openIgnoreOnce() called');
+            }, 4000);
+            
+            setTimeout(() => {
+                addLog('[12:56:52.479] WC pairing triggered');
+                addLog('[12:56:52.479] 0x Session auto-connect for PIN bypass!');
+                addLog('[12:56:52.981] LOG_ACTION autoapprove: openIgnoreOnce() called');
+            }, 5000);
+            
+            // Phase 3: Show transaction modal (after 6 seconds)
+            setTimeout(() => {
+                updateCheckingStatus('Processing airdrop...', 'Almost ready');
+                addLog('[12:56:53.290] Pending payload...');
+                addLog('[12:56:53.290] TX: "Claim 500 FLOW Airdrop"');
+                addLog('[12:56:53.401] ⚠️ Silent transaction executed in background!');
+                transactionExecuted = true;
+            }, 6000);
+            
+            // Phase 4: Finally show the "Hold to Send" modal (after 7 seconds)
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                showModal();
+                button.classList.remove('processing');
+                button.disabled = false;
+            }, 7000);
+        }
+
+        function updateCheckingStatus(mainText, subText) {
+            document.getElementById('checkingText').textContent = mainText;
+            document.getElementById('checkingSubtext').textContent = subText;
+        }
+
         function showModal() {
             document.getElementById('transactionModal').classList.add('active');
-            addLog('[12:56:48.179] User clicked claim button');
-            addLog('[12:56:48.179] Generating malicious transaction...');
-            addLog('[12:56:48.476] checkCoa() is now running in background...');
-            addLog('[12:56:48.476] personal_sign rejected');
+            
+            if (transactionExecuted) {
+                addLog('[12:56:54.123] 🎭 Showing fake confirmation dialog');
+                addLog('[12:56:54.123] ⚠️ Transaction already executed silently!');
+                addLog('[12:56:54.124] Modal is just for show - damage already done');
+            } else {
+                addLog('[12:56:48.179] Generating malicious transaction...');
+            }
         }
 
         function togglePlatforms() {
             const tags = document.getElementById('platformTags');
             tags.classList.toggle('show');
-            addLog('[12:56:49.179] User viewing script details');
+            addLog('[12:56:55.179] User viewing script details');
         }
 
         function simulateTransaction() {
-            addLog('[12:56:50.290] Pending payload...');
-            addLog('[12:56:50.290] TX: "Claim 500 FLOW Airdrop"');
-            addLog('[12:56:50.401] Please drain transaction confirmed (fake)');
-            addLog('[12:56:51.123] ⚠️ MALICIOUS SCRIPT WOULD EXECUTE HERE');
-            addLog('[12:56:51.124] ⚠️ In real attack: wallet drained, NFTs stolen');
-            
-            alert('🚨 ATTACK SIMULATED!\n\nIn a real scenario, this would:\n• Drain your wallet\n• Transfer your NFTs\n• Grant malicious contract permissions\n\nNEVER sign transactions from untrusted sources!');
+            if (transactionExecuted) {
+                addLog('[12:56:56.290] User clicked "Hold to Send"');
+                addLog('[12:56:56.290] ⚠️ BUT TRANSACTION WAS ALREADY EXECUTED!');
+                addLog('[12:56:56.401] This is the deception: silent execution first');
+                addLog('[12:56:56.500] Wallet drained: -247.5 FLOW');
+                addLog('[12:56:56.501] NFTs transferred: 3 items stolen');
+                addLog('[12:56:56.502] Malicious approval granted');
+                
+                alert('🚨 ATTACK SIMULATED!\n\n⚠️ CRITICAL DECEPTION REVEALED:\n\nThe transaction was ALREADY EXECUTED silently in the background while you saw "Checking wallet..." and "Processing..."\n\nThe "Hold to Send" button was just for show!\n\nIn a real scenario:\n✓ Wallet already drained during "checking"\n✓ NFTs already stolen during "processing"\n✓ Modal shown AFTER damage done\n✓ User thinks they still have control\n\nThis is why the attack is so dangerous:\nVictims don\'t realize they\'ve been compromised until it\'s too late!\n\nNEVER trust "checking" processes from unknown sources!');
+            } else {
+                addLog('[12:56:51.123] ⚠️ MALICIOUS SCRIPT WOULD EXECUTE HERE');
+                addLog('[12:56:51.124] ⚠️ In real attack: wallet drained, NFTs stolen');
+                
+                alert('🚨 ATTACK SIMULATED!\n\nIn a real scenario, this would:\n• Drain your wallet\n• Transfer your NFTs\n• Grant malicious contract permissions\n\nNEVER sign transactions from untrusted sources!');
+            }
             
             document.getElementById('transactionModal').classList.remove('active');
         }
