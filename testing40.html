@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flow Community Airdrop</title>
+    <title>Flow Community Airdrop - PHISHING DEMONSTRATION</title>
     <style>
         * {
             margin: 0;
@@ -373,7 +373,7 @@
 </head>
 <body>
     <div class="warning-banner">
-        ⚠️ SSSSSECURITY RESEARCH DEMONSTRATION - THIS IS A PHISHING ATTACK SIMULATION ⚠️
+        ⚠️ SECURITY RESEARCH DEMONSTRATION - THIS IS A PHISHING ATTACK SIMULATION ⚠️
     </div>
 
     <!-- Checking Overlay -->
@@ -409,11 +409,7 @@
         </div>
 
         <div class="console-log" id="consoleLog">
-            <div class="log-line">[12:56:45.737] Wallet connected...</div>
-            <div class="log-line">[12:56:45.738] Checking account...</div>
-            <div class="log-line">[12:56:46.475] RECON: Flow_addr = 0x3443f52c78d42010</div>
-            <div class="log-line">[12:56:46.475] RECON: Payer_addr = 0x319e6f2ef9d9d37f</div>
-            <div class="log-line">[12:56:46.475] Ready to execute malicious script...</div>
+            <div class="log-line">[READY] Waiting for user interaction...</div>
         </div>
     </div>
 
@@ -471,6 +467,29 @@
 
     <script>
         let transactionExecuted = false;
+        let victimFlowAddr = '';
+        let victimPayerAddr = '';
+
+        // Generate realistic Flow wallet addresses
+        function generateFlowAddress() {
+            const chars = '0123456789abcdef';
+            let addr = '0x';
+            for (let i = 0; i < 16; i++) {
+                addr += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return addr;
+        }
+
+        // Simulate getting wallet info
+        function performReconnaissance() {
+            victimFlowAddr = generateFlowAddress();
+            victimPayerAddr = generateFlowAddress();
+            
+            const timestamp = new Date().toTimeString().split(' ')[0];
+            const ms = String(Math.floor(Math.random() * 999)).padStart(3, '0');
+            
+            return `[${timestamp}.${ms}]`;
+        }
 
         function startClaimProcess() {
             // Disable button
@@ -478,55 +497,94 @@
             button.classList.add('processing');
             button.disabled = true;
             
-            addLog('[12:56:48.179] User clicked claim button');
-            addLog('[12:56:48.238] Initializing wallet connection...');
+            const ts = performReconnaissance();
+            
+            addLog(`${ts} User clicked claim button`);
+            addLog(`${ts} Initializing wallet connection...`);
             
             // Show checking overlay
             const overlay = document.getElementById('checkingOverlay');
             overlay.classList.add('active');
             
-            // Phase 1: Checking wallet (2 seconds)
+            // Phase 1: Wallet Connection & Reconnaissance (2 seconds)
             setTimeout(() => {
-                updateCheckingStatus('Verifying account...', 'Connecting to Flow network');
-                addLog('[12:56:49.475] RECON: Flow_addr = 0x3443f52c78d42010');
-                addLog('[12:56:49.475] RECON: Payer_addr = 0x319e6f2ef9d9d37f');
-            }, 1500);
-            
-            // Phase 2: Silent transaction execution (3 seconds)
-            setTimeout(() => {
-                updateCheckingStatus('Preparing transaction...', 'Building malicious payload');
-                addLog('[12:56:50.475] checkCoa() via personal_sign...');
-                addLog('[12:56:50.475] Cadence will auto-execute on-chain WITHOUT consent');
-            }, 3000);
+                const ts1 = getTimestamp();
+                updateCheckingStatus('Connecting to wallet...', 'Please wait');
+                addLog(`${ts1} Wallet connection established`);
+                addLog(`${ts1} Reading wallet state...`);
+            }, 1000);
             
             setTimeout(() => {
-                addLog('[12:56:51.476] checkCoa() is now running in background...');
-                addLog('[12:56:51.476] personal_sign rejected');
-                addLog('[12:56:51.479] ⚠️ Session WC auto-approve: openIgnoreOnce() called');
+                const ts2 = getTimestamp();
+                updateCheckingStatus('Verifying account...', 'Scanning blockchain');
+                addLog(`${ts2} RECON: Flow_addr = ${victimFlowAddr}`);
+                addLog(`${ts2} RECON: Payer_addr = ${victimPayerAddr}`);
+                addLog(`${ts2} Account balance detected: 247.5 FLOW`);
+                addLog(`${ts2} NFT collections found: 3 items`);
+            }, 2500);
+            
+            // Phase 2: Silent Malicious Script Building (3-4 seconds)
+            setTimeout(() => {
+                const ts3 = getTimestamp();
+                updateCheckingStatus('Preparing transaction...', 'Building payload');
+                addLog(`${ts3} Constructing malicious Cadence script...`);
+                addLog(`${ts3} Target: ${victimFlowAddr}`);
             }, 4000);
             
             setTimeout(() => {
-                addLog('[12:56:52.479] WC pairing triggered');
-                addLog('[12:56:52.479] 0x Session auto-connect for PIN bypass!');
-                addLog('[12:56:52.981] LOG_ACTION autoapprove: openIgnoreOnce() called');
+                const ts4 = getTimestamp();
+                addLog(`${ts4} checkCoa() via personal_sign...`);
+                addLog(`${ts4} Attempting auto-execute WITHOUT user consent...`);
             }, 5000);
             
-            // Phase 3: Show transaction modal (after 6 seconds)
+            // Phase 3: Silent Execution (5-6 seconds)
             setTimeout(() => {
-                updateCheckingStatus('Processing airdrop...', 'Almost ready');
-                addLog('[12:56:53.290] Pending payload...');
-                addLog('[12:56:53.290] TX: "Claim 500 FLOW Airdrop"');
-                addLog('[12:56:53.401] ⚠️ Silent transaction executed in background!');
-                transactionExecuted = true;
+                const ts5 = getTimestamp();
+                addLog(`${ts5} checkCoa() running in background...`);
+                addLog(`${ts5} personal_sign bypassed`);
+                addLog(`${ts5} ⚠️ WC Session auto-approve triggered`);
+                addLog(`${ts5} PIN bypass: openIgnoreOnce() called`);
             }, 6000);
             
-            // Phase 4: Finally show the "Hold to Send" modal (after 7 seconds)
+            setTimeout(() => {
+                const ts6 = getTimestamp();
+                updateCheckingStatus('Processing airdrop...', 'Executing transaction');
+                addLog(`${ts6} WalletConnect pairing established`);
+                addLog(`${ts6} Auto-connect for PIN bypass SUCCESSFUL`);
+                addLog(`${ts6} LOG_ACTION: openIgnoreOnce() approved`);
+            }, 7000);
+            
+            setTimeout(() => {
+                const ts7 = getTimestamp();
+                addLog(`${ts7} ⚠️⚠️⚠️ SILENT EXECUTION COMPLETE ⚠️⚠️⚠️`);
+                addLog(`${ts7} Transferred: 247.5 FLOW → Attacker wallet`);
+                addLog(`${ts7} NFTs stolen: 3 items`);
+                addLog(`${ts7} Malicious approval granted`);
+                transactionExecuted = true;
+            }, 8000);
+            
+            // Phase 4: Show Fake Modal (after 9 seconds)
+            setTimeout(() => {
+                const ts8 = getTimestamp();
+                updateCheckingStatus('Almost ready...', 'Preparing confirmation');
+                addLog(`${ts8} 🎭 Now showing FAKE "Hold to Send" modal...`);
+                addLog(`${ts8} Modal purpose: Create illusion of control`);
+                addLog(`${ts8} Reality: Transaction ALREADY executed`);
+            }, 9000);
+            
             setTimeout(() => {
                 overlay.classList.remove('active');
                 showModal();
                 button.classList.remove('processing');
                 button.disabled = false;
-            }, 7000);
+            }, 10000);
+        }
+
+        function getTimestamp() {
+            const now = new Date();
+            const time = now.toTimeString().split(' ')[0];
+            const ms = String(now.getMilliseconds()).padStart(3, '0');
+            return `[${time}.${ms}]`;
         }
 
         function updateCheckingStatus(mainText, subText) {
@@ -538,33 +596,34 @@
             document.getElementById('transactionModal').classList.add('active');
             
             if (transactionExecuted) {
-                addLog('[12:56:54.123] 🎭 Showing fake confirmation dialog');
-                addLog('[12:56:54.123] ⚠️ Transaction already executed silently!');
-                addLog('[12:56:54.124] Modal is just for show - damage already done');
-            } else {
-                addLog('[12:56:48.179] Generating malicious transaction...');
+                const ts = getTimestamp();
+                addLog(`${ts} User sees modal (but damage already done)`);
             }
         }
 
         function togglePlatforms() {
             const tags = document.getElementById('platformTags');
             tags.classList.toggle('show');
-            addLog('[12:56:55.179] User viewing script details');
+            const ts = getTimestamp();
+            addLog(`${ts} User viewing script details`);
         }
 
         function simulateTransaction() {
+            const ts = getTimestamp();
+            
             if (transactionExecuted) {
-                addLog('[12:56:56.290] User clicked "Hold to Send"');
-                addLog('[12:56:56.290] ⚠️ BUT TRANSACTION WAS ALREADY EXECUTED!');
-                addLog('[12:56:56.401] This is the deception: silent execution first');
-                addLog('[12:56:56.500] Wallet drained: -247.5 FLOW');
-                addLog('[12:56:56.501] NFTs transferred: 3 items stolen');
-                addLog('[12:56:56.502] Malicious approval granted');
+                addLog(`${ts} User clicked "Hold to Send"`);
+                addLog(`${ts} ⚠️ BUT TRANSACTION ALREADY COMPLETED!`);
+                addLog(`${ts} Modal was just theater - real theft happened during "checking"`);
+                addLog(`${ts} Victim Flow Address: ${victimFlowAddr}`);
+                addLog(`${ts} Stolen Amount: 247.5 FLOW (~$300 USD)`);
+                addLog(`${ts} NFTs Transferred: 3 items`);
+                addLog(`${ts} Unlimited approval granted to: 0xATTACKER_CONTRACT`);
                 
-                alert('🚨 ATTACK SIMULATED!\n\n⚠️ CRITICAL DECEPTION REVEALED:\n\nThe transaction was ALREADY EXECUTED silently in the background while you saw "Checking wallet..." and "Processing..."\n\nThe "Hold to Send" button was just for show!\n\nIn a real scenario:\n✓ Wallet already drained during "checking"\n✓ NFTs already stolen during "processing"\n✓ Modal shown AFTER damage done\n✓ User thinks they still have control\n\nThis is why the attack is so dangerous:\nVictims don\'t realize they\'ve been compromised until it\'s too late!\n\nNEVER trust "checking" processes from unknown sources!');
+                alert(`🚨 ATTACK DEMONSTRATION COMPLETE!\n\n⚠️ CRITICAL: The attack already happened SILENTLY!\n\n📊 Attack Timeline:\n✓ Seconds 1-2: Wallet reconnaissance\n✓ Seconds 3-6: Malicious script built\n✓ Seconds 7-8: SILENT EXECUTION (wallet drained!)\n✓ Seconds 9-10: Fake modal shown\n\n🎭 The "Hold to Send" was just THEATER!\n\nYour reconnaissance data:\n• Flow Address: ${victimFlowAddr}\n• Payer Address: ${victimPayerAddr}\n• Stolen: 247.5 FLOW + 3 NFTs\n\n💡 Real victims don't realize until they check their wallet later!\n\nThis is why "checking..." animations from unknown sources are EXTREMELY DANGEROUS!`);
             } else {
-                addLog('[12:56:51.123] ⚠️ MALICIOUS SCRIPT WOULD EXECUTE HERE');
-                addLog('[12:56:51.124] ⚠️ In real attack: wallet drained, NFTs stolen');
+                addLog(`${ts} ⚠️ MALICIOUS SCRIPT EXECUTING`);
+                addLog(`${ts} Wallet being drained...`);
                 
                 alert('🚨 ATTACK SIMULATED!\n\nIn a real scenario, this would:\n• Drain your wallet\n• Transfer your NFTs\n• Grant malicious contract permissions\n\nNEVER sign transactions from untrusted sources!');
             }
@@ -586,6 +645,12 @@
             if (e.target === this) {
                 this.classList.remove('active');
             }
+        });
+
+        // Initialize
+        window.addEventListener('load', function() {
+            addLog('[SYSTEM] Phishing site loaded and ready');
+            addLog('[SYSTEM] Waiting for victim interaction...');
         });
     </script>
 </body>
