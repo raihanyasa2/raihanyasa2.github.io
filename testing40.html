@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow Community Airdrop - PHISHING DEMONSTRATION</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .warning-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ff3b3b;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            z-index: 9999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(30, 30, 46, 0.9);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            margin-top: 60px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 239, 139, 0.3);
+        }
+
+        .logo::before {
+            content: "◼";
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a0a0b8;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        .claim-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 239, 139, 0.4);
+        }
+
+        .claim-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 239, 139, 0.5);
+        }
+
+        .claim-button:active {
+            transform: translateY(0);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: flex-end;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e1e2e;
+            border-radius: 24px 24px 0 0;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-logo::before {
+            content: "◼";
+            font-size: 30px;
+            color: white;
+        }
+
+        .modal-title {
+            font-size: 14px;
+            color: #a0a0b8;
+            margin-bottom: 5px;
+        }
+
+        .modal-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .transaction-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #a0a0b8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-value {
+            color: white;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .info-subtitle {
+            color: #00EF8B;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .script-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .script-label {
+            color: #a0a0b8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .platform-tags {
+            position: absolute;
+            right: 80px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .platform-tags.show {
+            display: block;
+        }
+
+        .platform-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .platform-tag:last-child {
+            margin-bottom: 0;
+        }
+
+        .checkmark {
+            color: #00EF8B;
+            font-weight: bold;
+        }
+
+        .send-button {
+            width: 100%;
+            padding: 20px;
+            background: white;
+            border: none;
+            border-radius: 16px;
+            color: #1e1e2e;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            transform: scale(1.02);
+        }
+
+        .console-log {
+            background: #0a0a0f;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #00ff00;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-line {
+            margin-bottom: 5px;
+        }
+
+        .warning-text {
+            background: rgba(255, 59, 59, 0.1);
+            border: 2px solid #ff3b3b;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .warning-text h3 {
+            color: #ff3b3b;
+            margin-bottom: 10px;
+        }
+
+        .arrow {
+            color: #00EF8B;
+        }
+    </style>
+</head>
+<body>
+    <div class="warning-banner">
+        ⚠️ SECURITY RESEARCH DEMONSTRATION - THIS IS A PHISHING ATTACK SIMULATION ⚠️
+    </div>
+
+    <div class="container">
+        <div class="logo"></div>
+        <h1>Flow Community Airdrop</h1>
+        <p class="subtitle">Claim your 500 FLOW tokens</p>
+        
+        <button class="claim-button" onclick="showModal()">Claim Airdrop</button>
+
+        <div class="warning-text">
+            <h3>⚠️ HOW THIS PHISHING ATTACK WORKS</h3>
+            <p style="color: #a0a0b8; font-size: 14px; line-height: 1.6;">
+                This fake airdrop prompts you to sign a malicious transaction that could:
+                <br>• Drain your wallet
+                <br>• Steal your NFTs
+                <br>• Grant unauthorized access to your assets
+                <br><br>
+                <strong style="color: white;">Always verify transaction details before signing!</strong>
+            </p>
+        </div>
+
+        <div class="console-log" id="consoleLog">
+            <div class="log-line">[12:56:45.737] Wallet connected...</div>
+            <div class="log-line">[12:56:45.738] Checking account...</div>
+            <div class="log-line">[12:56:46.475] RECON: Flow_addr = 0x3443f52c78d42010</div>
+            <div class="log-line">[12:56:46.475] RECON: Payer_addr = 0x319e6f2ef9d9d37f</div>
+            <div class="log-line">[12:56:46.475] Ready to execute malicious script...</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="transactionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-logo"></div>
+                <div class="modal-title">Transaction Request from</div>
+                <div class="modal-name">Flow Community Airdrop</div>
+            </div>
+
+            <div class="transaction-info">
+                <div class="info-row">
+                    <div class="info-label">
+                        <span>💳</span>
+                        TRANSACTION FEE
+                    </div>
+                    <div class="info-value">
+                        <div style="text-decoration: line-through; color: #a0a0b8;">0.001</div>
+                        <div>0.00</div>
+                        <div class="info-subtitle">Covered by Flow Wallet</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="script-section" onclick="togglePlatforms()">
+                <div class="script-label">
+                    <span>📜</span>
+                    SCRIPT
+                </div>
+                <span class="arrow">→</span>
+                <div class="platform-tags" id="platformTags">
+                    <div class="platform-tag">
+                        <span>Android</span>
+                        <span class="checkmark">✓</span>
+                    </div>
+                    <div class="platform-tag">
+                        <span>Extension</span>
+                        <span class="checkmark">✓</span>
+                    </div>
+                    <div class="platform-tag">
+                        <span>iOS</span>
+                        <span class="checkmark">✓</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="send-button" onclick="simulateTransaction()">
+                <span style="font-size: 24px;">⏺</span>
+                Hold to Send
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function showModal() {
+            document.getElementById('transactionModal').classList.add('active');
+            addLog('[12:56:48.179] User clicked claim button');
+            addLog('[12:56:48.179] Generating malicious transaction...');
+            addLog('[12:56:48.476] checkCoa() is now running in background...');
+            addLog('[12:56:48.476] personal_sign rejected');
+        }
+
+        function togglePlatforms() {
+            const tags = document.getElementById('platformTags');
+            tags.classList.toggle('show');
+            addLog('[12:56:49.179] User viewing script details');
+        }
+
+        function simulateTransaction() {
+            addLog('[12:56:50.290] Pending payload...');
+            addLog('[12:56:50.290] TX: "Claim 500 FLOW Airdrop"');
+            addLog('[12:56:50.401] Please drain transaction confirmed (fake)');
+            addLog('[12:56:51.123] ⚠️ MALICIOUS SCRIPT WOULD EXECUTE HERE');
+            addLog('[12:56:51.124] ⚠️ In real attack: wallet drained, NFTs stolen');
+            
+            alert('🚨 ATTACK SIMULATED!\n\nIn a real scenario, this would:\n• Drain your wallet\n• Transfer your NFTs\n• Grant malicious contract permissions\n\nNEVER sign transactions from untrusted sources!');
+            
+            document.getElementById('transactionModal').classList.remove('active');
+        }
+
+        function addLog(message) {
+            const consoleLog = document.getElementById('consoleLog');
+            const logLine = document.createElement('div');
+            logLine.className = 'log-line';
+            logLine.textContent = message;
+            consoleLog.appendChild(logLine);
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('transactionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
