@@ -1,9 +1,57 @@
-<button onclick="go()">Open Demo00</button>
+<button onclick="go()">Open Demo AJA</button>
+
 <script>
 function go(){
-  var x = window.open('https://google.com/generate_204');
+  var x = window.open('about:blank');
+
   setTimeout(function(){
-    x.document.body.innerHTML = "<h1>This is a Security Demo</h1><p>This demonstrates UI manipulation risk.</p>";
+    x.document.write(`
+      <html>
+      <head>
+        <title>Demo Login Page</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+          }
+          .box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+          }
+          input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+          }
+          button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="box">
+          <h3>Demo Login</h3>
+          <input type="text" placeholder="Username">
+          <input type="password" placeholder="Password">
+          <button>Sign In</button>
+          <p style="font-size:12px;color:gray;">
+            This is a security research demonstration.
+          </p>
+        </div>
+      </body>
+      </html>
+    `);
   },1000);
 }
 </script>
