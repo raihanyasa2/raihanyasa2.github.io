@@ -1,0 +1,23 @@
+<html>
+
+<body>
+<a href="https://google.com" target="_blank">click me</a>
+<p></p>
+<script> 
+
+ setTimeout(() => {
+      
+     const filePromise = window.showOpenFilePicker(); 
+    setTimeout(
+      async () => {
+             const handle = (await filePromise)[0]; 
+       console.log(`File: ${handle.name}`);  }, 0);
+    
+  }, 3000);
+
+
+
+</script>
+</body>
+
+</html>
