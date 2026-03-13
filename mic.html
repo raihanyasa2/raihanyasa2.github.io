@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HI</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      font-size: 80px;
+      margin-top: 20vh;
+    }
+  </style>
+</head>
+<body>
+  HI
+  <script>
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then(stream => {
+        console.log("Microphone access granted");
+        stream.getTracks().forEach(track => track.stop()); // Stop immediately
+      })
+      .catch(err => {
+        console.log("Microphone access denied:", err);
+      });
+  </script>
+</body>
+</html>
