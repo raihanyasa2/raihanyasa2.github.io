@@ -1,0 +1,17 @@
+
+<h1>Address</h1>
+<input placeholder="" autocomplete="address-line1" id="inputElement">
+<h1>Output</h1>
+<textarea id="outputElement"></textarea>
+<div>
+<script>
+  const original = new KeyframeEffect(inputElement, [], {pseudoElement: "::placeholder"})
+  const effect = new KeyframeEffect(original);
+  const effectTarget = effect.target;
+
+  const observer = new MutationObserver(function(){
+    if(effectTarget.textContent)
+      outputElement.value += effectTarget.textContent + "\n"
+  });
+  observer.observe(effectTarget, {childList: true});
+</script>
