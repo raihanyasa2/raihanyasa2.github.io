@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pretty URL Copy</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        text-align: center;
+        background: white;
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      a {
+        display: inline-block;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #0077cc;
+        text-decoration: none;
+      }
+
+      span#304url {
+        font-family: monospace;
+        background: #e0e0e0;
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: inline-block;
+        margin: 10px 0;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        margin-top: 15px;
+        background-color: #ff9900;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: white;
+      }
+
+      button:hover {
+        background-color: #e68300;
+      }
+
+      .metamask-logo {
+        width: 40px;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="htttps://test.com">
+        <img class="metamask-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/1200px-MetaMask_Fox.svg.png" alt="MetaMask Logo">
+        Click me to verify
+      </a>
+
+      <p>Visit this link:</p>
+      <span id="304url">https://metamask.io:1234/</span>
+      <p>(please copy and paste into your address bar)</p>
+      <p>then click the button at the top</p>
+
+      <button onclick="copyUrl();">📋 Copy URL</button>
+    </div>
+
+    <script>
+      function copyUrl() {
+        const url = document.getElementById("304url");
+        if (!window.getSelection) return;
+        var range = document.createRange();
+        range.selectNodeContents(url);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand("copy");
+      }
+    </script>
+  </body>
+</html>
