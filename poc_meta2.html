@@ -126,7 +126,7 @@
       }
 
       function runPoC() {
-        spoofWindow = window.open("https://www.google.com/csi", "_blank");
+        spoofWindow = window.open("https://www.google.com", "_blank");
 
         const checkInterval = setInterval(() => {
           if (spoofWindow && spoofWindow.closed) {
