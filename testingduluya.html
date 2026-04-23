@@ -1,0 +1,31 @@
+<html>
+<body>
+
+<button onclick="p()">click</button>
+
+</body>
+</html>
+
+<script>
+function p()
+{
+  setTimeout(v,1);
+  document.body.requestFullscreen();
+}
+
+function v()
+{
+
+       navigator.mediaDevices ?
+        navigator.mediaDevices.getUserMedia(
+          {audio: true}).then(
+            
+        ) :
+        navigator.getUserMedia(
+          {audio: true},
+        
+        );
+
+}
+
+</script>
